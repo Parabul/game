@@ -5,22 +5,22 @@ public enum Player {
   ONE(0), TWO(1);
 
   static {
-    ONE.next = TWO;
-    TWO.next = ONE;
+    ONE.opponent = TWO;
+    TWO.opponent = ONE;
   }
 
-  public Player next;
   public final int index;
+  public Player opponent;
 
   Player(int index) {
     this.index = index;
   }
 
-  public int boardCell(int cell) {
+  public int boardCell(int move) {
     if (this == ONE) {
-      return 9 - cell;
+      return 9 - move;
     }
 
-    return 8 + cell;
+    return 8 + move;
   }
 }

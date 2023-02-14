@@ -1,8 +1,10 @@
-package kz.ninestones.game.core;
+package kz.ninestones.game.simulation;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import java.util.concurrent.ThreadLocalRandom;
+import kz.ninestones.game.core.Policy;
+import kz.ninestones.game.core.State;
 
 public class Runner {
 

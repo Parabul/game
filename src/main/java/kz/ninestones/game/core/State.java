@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
-// TODO: Consider short/byte instead of int;
 public class State implements Serializable {
 
   // 0-8  player one
@@ -22,9 +21,9 @@ public class State implements Serializable {
   // For TWO possible range: [0-8]
   final int[] specialCells;
 
-  Player nextMove;
+  public Player nextMove;
 
-  State() {
+  public State() {
     cells = new int[18];
     Arrays.fill(cells, 9);
 
@@ -34,7 +33,7 @@ public class State implements Serializable {
     nextMove = Player.ONE;
   }
 
-  State(State original) {
+  public State(State original) {
     cells = Arrays.copyOf(original.cells, original.cells.length);
     score = Arrays.copyOf(original.score, original.score.length);
     specialCells = Arrays.copyOf(original.specialCells, original.specialCells.length);
@@ -43,11 +42,10 @@ public class State implements Serializable {
 
 
   // Sparse init
-  State(Map<Integer, Integer> nonZeroValues, int[] score, int[] specialCells, Player nextMove) {
+  public State(Map<Integer, Integer> nonZeroValues, int[] score, int[] specialCells, Player nextMove) {
     checkArgument(score.length == 2, "Score length != 2");
     checkArgument(specialCells.length == 2, "SpecialCells length != 2");
-    checkArgument(
-        nonZeroValues.keySet().stream().allMatch(key -> key >= 0 && key < 18),
+    checkArgument(nonZeroValues.keySet().stream().allMatch(key -> key >= 0 && key < 18),
         "Value key out of range");
 
     checkArgument(specialCells[0] == -1 || (specialCells[0] > 8 && specialCells[0] < 17),
@@ -59,7 +57,7 @@ public class State implements Serializable {
     this.cells = new int[18];
     Arrays.fill(this.cells, 0);
 
-    for(Map.Entry<Integer, Integer> cellValue:nonZeroValues.entrySet()){
+    for (Map.Entry<Integer, Integer> cellValue : nonZeroValues.entrySet()) {
       this.cells[cellValue.getKey()] = cellValue.getValue();
     }
 
@@ -95,16 +93,14 @@ public class State implements Serializable {
 
     sb.append("|");
     for (int i = 0; i < 9; i++) {
-      sb.append(
-          Strings.padStart(specialCells[1] == i ? cells[i] + "*" : cells[i] + "", 4, ' '));
+      sb.append(Strings.padStart(specialCells[1] == i ? cells[i] + "*" : cells[i] + "", 4, ' '));
       sb.append("|");
     }
     sb.append("\n");
 
     sb.append("|");
     for (int i = 9; i < 18; i++) {
-      sb.append(
-          Strings.padStart(specialCells[0] == i ? cells[i] + "*" : cells[i] + "", 4, ' '));
+      sb.append(Strings.padStart(specialCells[0] == i ? cells[i] + "*" : cells[i] + "", 4, ' '));
       sb.append("|");
     }
     sb.append("\n");

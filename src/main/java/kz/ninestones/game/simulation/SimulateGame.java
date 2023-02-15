@@ -1,5 +1,6 @@
 package kz.ninestones.game.simulation;
 
+import com.google.common.hash.BloomFilter;
 import java.util.EnumMap;
 import java.util.Map;
 import kz.ninestones.game.core.Player;
@@ -12,10 +13,10 @@ public class SimulateGame {
   private final EnumMap<Player, Model> models;
 
   public SimulateGame(Map<Player, Model> models) {
-    this.models = new EnumMap(models);
+    this.models = new EnumMap<>(models);
   }
 
-  public SimulationResult simulate() {
+  public SimulationResult simulate(BloomFilter<State> bloomFilter) {
 
     State state = new State();
 
@@ -23,6 +24,7 @@ public class SimulateGame {
 
     while (!Policy.isGameOver(state).isPresent()) {
       steps++;
+      bloomFilter.put(state);
 
       int move = models.get(state.nextMove).suggestNextMove(state);
 

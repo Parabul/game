@@ -3,6 +3,10 @@ package kz.ninestones.game.core;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.base.Strings;
+import com.google.common.hash.Funnel;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.PrimitiveSink;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
@@ -10,16 +14,25 @@ import java.util.Optional;
 
 public class State implements Serializable {
 
+  public static final Funnel<State> stateFunnel = (State from, PrimitiveSink into) -> {
+    Arrays.stream(from.cells).forEachOrdered(into::putInt);
+    Arrays.stream(from.score).forEachOrdered(into::putInt);
+    Arrays.stream(from.specialCells).forEachOrdered(into::putInt);
+
+    into.putInt(from.nextMove.index);
+  };
+
+
   // 0-8  player one
   // 9-17 player two
-  final int[] cells;
+  public final int[] cells;
 
-  final int[] score;
+  public final int[] score;
 
   // -1 special cell not set
   // For ONE possible range: [9-17]
   // For TWO possible range: [0-8]
-  final int[] specialCells;
+  public final int[] specialCells;
 
   public Player nextMove;
 
@@ -42,7 +55,8 @@ public class State implements Serializable {
 
 
   // Sparse init
-  public State(Map<Integer, Integer> nonZeroValues, int[] score, int[] specialCells, Player nextMove) {
+  public State(Map<Integer, Integer> nonZeroValues, int[] score, int[] specialCells,
+      Player nextMove) {
     checkArgument(score.length == 2, "Score length != 2");
     checkArgument(specialCells.length == 2, "SpecialCells length != 2");
     checkArgument(nonZeroValues.keySet().stream().allMatch(key -> key >= 0 && key < 18),
@@ -113,4 +127,27 @@ public class State implements Serializable {
 
     return sb.toString();
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    State state = (State) o;
+    return Arrays.equals(cells, state.cells) && Arrays.equals(score, state.score) && Arrays.equals(
+        specialCells, state.specialCells) && nextMove == state.nextMove;
+  }
+
+  @Override
+  public int hashCode() {
+    return getHashCode().asInt();
+  }
+
+  public HashCode getHashCode() {
+    return Hashing.sha384().newHasher().putObject(this, stateFunnel).hash();
+  }
+
 }

@@ -3,34 +3,40 @@ package kz.ninestones.game.simulation;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.BloomFilter;
+import java.io.IOException;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.model.MaxModel;
 import kz.ninestones.game.model.MinMaxModel;
 import kz.ninestones.game.model.Model;
+import kz.ninestones.game.model.NeuralNetStateEvaluator;
 import kz.ninestones.game.model.ScoreDiffStateEvaluator;
 import kz.ninestones.game.model.StateEvaluator;
 
 public class LoadRunner {
 
 
-  public static void main(String[] args) {
-    run(1000);
-    run(10000);
+  public static void main(String[] args) throws IOException {
+    run(1);
+    run(10);
+    run(100);
 //    run(100000);
 //    run(1000000);
   }
 
-  public static void run(int times) {
+  public static void run(int times) throws IOException {
     System.out.println("-----");
     System.out.println(times);
 
     StateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();
-    Model maxModel = new MaxModel(stateEvaluator);
-    Model minMaxModel = new MinMaxModel(stateEvaluator);
+    MinMaxModel first = new MinMaxModel(stateEvaluator);
+
+
+    NeuralNetStateEvaluator neuralNetStateEvaluator = new NeuralNetStateEvaluator();
+    Model second = new MinMaxModel(neuralNetStateEvaluator);
 
     SimulateGame simulator = new SimulateGame(
-        ImmutableMap.of(Player.ONE, maxModel, Player.TWO, minMaxModel));
+        ImmutableMap.of(Player.ONE, first, Player.TWO, second));
 
     int playerOneWon = 0;
     int playerTwoWon = 0;
@@ -38,6 +44,7 @@ public class LoadRunner {
 
     BloomFilter<State> bloomFilter = BloomFilter.create(State.stateFunnel, 20000000, 0.0001);
 
+    System.out.println("init complete");
     Stopwatch watch = Stopwatch.createStarted();
 
     for (int i = 0; i < times; i++) {

@@ -15,8 +15,8 @@ public class NeuralNetStateEvaluatorTest {
 
     NeuralNetStateEvaluator stateEvaluator = new NeuralNetStateEvaluator();
 
-    assertThat(stateEvaluator.evaluate(new State(), Player.ONE)).isWithin(0.001).of(0.53);
-    assertThat(stateEvaluator.evaluate(new State(), Player.TWO)).isWithin(0.001).of(0.47);
+    assertThat(stateEvaluator.evaluate(new State(), Player.ONE)).isWithin(0.001).of(0.624);
+    assertThat(stateEvaluator.evaluate(new State(), Player.TWO)).isWithin(0.001).of(0.376);
   }
 
   @Test
@@ -37,7 +37,7 @@ public class NeuralNetStateEvaluatorTest {
 
     NeuralNetStateEvaluator stateEvaluator = new NeuralNetStateEvaluator();
 
-    assertThat(stateEvaluator.evaluate(state, Player.ONE)).isWithin(0.001).of(0.003);
-    assertThat(stateEvaluator.evaluate(state, Player.TWO)).isWithin(0.001).of(0.997);
+    assertThat(stateEvaluator.evaluate(state, Player.ONE)).isWithin(0.001).of(0.0);
+    assertThat(stateEvaluator.evaluate(state, Player.TWO)).isWithin(0.001).of(1.0);
   }
 }

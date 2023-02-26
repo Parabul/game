@@ -3,6 +3,7 @@ package kz.ninestones.game.learning;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.model.MinMaxModel;
@@ -53,6 +54,7 @@ public class TrainingSet {
 
     DataSet dataSet = new DataSet(input, output);
     List<DataSet> listDs = dataSet.asList();
+    Collections.shuffle(listDs);
     return new ListDataSetIterator(listDs, batchSize);
   }
 }

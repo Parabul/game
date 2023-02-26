@@ -47,11 +47,12 @@ public class SumModel {
     //Generate the training data
 
     //Create the network
-    int numInput = 163;
+    int numInput = 36;
     int numOutputs = 1;
     int nHidden = 300;
+
     MultiLayerNetwork net = new MultiLayerNetwork(
-        new NeuralNetConfiguration.Builder().seed(seed).weightInit(WeightInit.XAVIER)
+        new NeuralNetConfiguration.Builder().seed(seed).l1(0.001).weightInit(WeightInit.XAVIER)
             .updater(new Adam(learningRate)).list().layer(0,
                 new DenseLayer.Builder().nIn(numInput).nOut(nHidden).activation(
                         Activation.RELU) //Change this to RELU and you will see the net learns very well very quickly
@@ -65,7 +66,8 @@ public class SumModel {
 
     System.out.println("Init: " + watch);
 
-    for (int j = 0; j < 10; j++) {
+//    for (int j = 0; j < 10; j++) {
+    int j = 0;
       DataSetIterator iterator = TrainingSet.getTrainingData(nSamples, batchSize);
 
       //Train the network on the full data set, and evaluate in periodically
@@ -74,21 +76,21 @@ public class SumModel {
         iterator.reset();
         net.fit(iterator);
 
-        final INDArray input = StateEncoder.encode(new State());
+        final INDArray input = StateEncoder.leanEncode(new State());
         INDArray out = net.output(input, false);
         System.out.println(out);
 
-        final INDArray input2 = StateEncoder.encode(
+        final INDArray input2 = StateEncoder.leanEncode(
             new State(ImmutableMap.of(0, 10, 12, 10), new int[]{80, 62}, new int[]{-1, -1},
                 Player.ONE));
         INDArray out2 = net.output(input2, false);
         System.out.println(out2);
       }
-    }
+//    }
     // Test the addition of 2 numbers (Try different numbers here)
-    final INDArray input = StateEncoder.encode(new State());
+    final INDArray input = StateEncoder.leanEncode(new State());
     INDArray out = net.output(input, false);
-    System.out.println(out);
+//    System.out.println(out);
 
     watch.stop();
 

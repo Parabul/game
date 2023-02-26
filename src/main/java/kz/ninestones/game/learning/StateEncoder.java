@@ -18,13 +18,31 @@ public class StateEncoder {
 
   public static INDArray encode(List<State> states) {
 
-    ImmutableList<INDArray> encodedStates = states.stream().map(StateEncoder::encode)
+    ImmutableList<INDArray> encodedStates = states.stream().map(StateEncoder::leanEncode)
         .collect(ImmutableList.toImmutableList());
 
     return Nd4j.vstack(encodedStates);
 
   }
 
+  public static INDArray leanEncode(State state) {
+    // 2 X 9 (cells) + 2 X 8 (special cell) + 2 X 1 (score) + 1 (nextMove)
+
+    double sum = Arrays.stream(state.cells).sum();
+
+    double[] cells = Arrays.stream(state.cells).mapToDouble(cell -> cell / sum).toArray();
+
+    double[] scores = Arrays.stream(state.score)
+        .mapToDouble(score -> score > 81 ? 1.0 : 1.0 * score / 82.0).toArray();
+
+    double[] specialCells = Arrays.stream(state.specialCells)
+        .map(specialCell -> specialCell > 8 ? specialCell - 9 : specialCell)
+        .mapToObj(StateEncoder::oneHot).flatMapToDouble(Arrays::stream).toArray();
+
+    double[] encoded = Doubles.concat(cells, specialCells, scores);
+
+    return Nd4j.create(encoded, 1, 36);
+  }
 
   public static INDArray encode(State state) {
     // 2 X 9 X 8 (cells) + 2 X 8 (special cell) + 2 X 1 (score) + 1 (nextMove)

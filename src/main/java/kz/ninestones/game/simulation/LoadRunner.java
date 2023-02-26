@@ -11,6 +11,7 @@ import kz.ninestones.game.model.MinMaxModel;
 import kz.ninestones.game.model.Model;
 import kz.ninestones.game.model.NeuralNetStateEvaluator;
 import kz.ninestones.game.model.ScoreDiffStateEvaluator;
+import kz.ninestones.game.model.ScoreStateEvaluator;
 import kz.ninestones.game.model.StateEvaluator;
 
 public class LoadRunner {
@@ -28,15 +29,16 @@ public class LoadRunner {
     System.out.println("-----");
     System.out.println(times);
 
-    StateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();
-    MinMaxModel first = new MinMaxModel(stateEvaluator);
+    StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
+    StateEvaluator scoreStateEvaluator = new ScoreStateEvaluator();
+    StateEvaluator neuralNetStateEvaluator = new NeuralNetStateEvaluator();
 
+    Model minMaxScore = new MinMaxModel(diffStateEvaluator);
 
-    NeuralNetStateEvaluator neuralNetStateEvaluator = new NeuralNetStateEvaluator();
-    Model second = new MinMaxModel(neuralNetStateEvaluator);
+    Model minMaxNet = new MinMaxModel(neuralNetStateEvaluator);
 
     SimulateGame simulator = new SimulateGame(
-        ImmutableMap.of(Player.ONE, first, Player.TWO, second));
+        ImmutableMap.of(Player.ONE, minMaxNet, Player.TWO, minMaxScore));
 
     int playerOneWon = 0;
     int playerTwoWon = 0;

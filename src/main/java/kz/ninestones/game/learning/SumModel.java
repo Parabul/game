@@ -79,9 +79,8 @@ public class SumModel {
         INDArray out = net.output(input, false);
         System.out.println(out);
 
-        final INDArray input2 = StateEncoder.leanEncode(
-            new State(ImmutableMap.of(0, 10, 12, 10), new int[]{80, 62}, new int[]{-1, -1},
-                Player.ONE));
+        final INDArray input2 = StateEncoder.leanEncode(new State(ImmutableMap.of(0, 10, 12, 10),
+            ImmutableMap.of(Player.ONE, 80, Player.TWO, 62), ImmutableMap.of(), Player.ONE));
         INDArray out2 = net.output(input2, false);
         System.out.println(out2);
       }

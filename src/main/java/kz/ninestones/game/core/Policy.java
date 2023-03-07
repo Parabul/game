@@ -33,17 +33,17 @@ public class Policy {
 
   public static Optional<Player> isGameOver(State state) {
 
-    if(state.score[Player.ONE.index] > 81){
+    if (state.score.get(Player.ONE) > 81) {
       return Optional.of(Player.ONE);
     }
 
-    if(state.score[Player.TWO.index] > 81){
+    if (state.score.get(Player.TWO) > 81) {
       return Optional.of(Player.TWO);
     }
 
     boolean hasMoves = IntStream.rangeClosed(1, 9).anyMatch(move -> isAllowedMove(state, move));
 
-    if(!hasMoves){
+    if (!hasMoves) {
       return Optional.of(state.nextMove.opponent);
     }
 
@@ -88,13 +88,13 @@ public class Policy {
       if (!special.isPresent()) {
         newState.cells[currentCell]++;
       } else {
-        newState.score[special.get().index]++;
+        newState.score.merge(special.get(), 1, Integer::sum);
       }
 
       // Rule B
       if (hand == 0 && isReachable(player, currentCell)) {
         if (newState.cells[currentCell] % 2 == 0) {
-          newState.score[player.index] += newState.cells[currentCell];
+          newState.score.merge(player, newState.cells[currentCell], Integer::sum);
           newState.cells[currentCell] = 0;
         }
 
@@ -102,20 +102,19 @@ public class Policy {
         if (newState.cells[currentCell] == 3) {
           int possibleSpecialCellMove = moveByCell(currentCell);
 
-          Optional<Integer> opponentSpecialCellMove =
-              state.specialCells[player.opponent.index] == -1 ? Optional.empty()
-                  : Optional.of(moveByCell(state.specialCells[player.opponent.index]));
+          Optional<Integer> opponentSpecialCellMove = Optional.ofNullable(
+              state.specialCells.get(player.opponent)).map(Policy::moveByCell);
 
           boolean eligibleForSpecial =
-              newState.specialCells[player.index] == -1 && // Does not have special cell yet;
+              !newState.specialCells.containsKey(player) && // Does not have special cell yet;
                   possibleSpecialCellMove != 9 && // 9th (most right cell) can not be special;
                   (!opponentSpecialCellMove.isPresent() || !opponentSpecialCellMove.get()
                       .equals(possibleSpecialCellMove)); // Can not mirror opponent's special;
 
-          if(eligibleForSpecial){
-            newState.score[player.index] += 3;
+          if (eligibleForSpecial) {
+            newState.score.merge(player, 3, Integer::sum);
             newState.cells[currentCell] = 0;
-            newState.specialCells[player.index] = currentCell;
+            newState.specialCells.put(player, currentCell);
           }
         }
       }

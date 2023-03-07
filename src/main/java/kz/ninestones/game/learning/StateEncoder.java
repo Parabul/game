@@ -5,6 +5,8 @@ import com.google.common.primitives.Doubles;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
@@ -32,12 +34,15 @@ public class StateEncoder {
 
     double[] cells = Arrays.stream(state.cells).mapToDouble(cell -> cell / sum).toArray();
 
-    double[] scores = Arrays.stream(state.score)
+    double[] scores = state.score.values().stream()
         .mapToDouble(score -> score > 81 ? 1.0 : 1.0 * score / 82.0).toArray();
 
-    double[] specialCells = Arrays.stream(state.specialCells)
+    int playerOneSpecial = state.specialCells.getOrDefault(Player.ONE, -1);
+    int playerTwoSpecial = state.specialCells.getOrDefault(Player.TWO, -1);
+
+    double[] specialCells = Stream.of(playerOneSpecial, playerTwoSpecial)
         .map(specialCell -> specialCell > 8 ? specialCell - 9 : specialCell)
-        .mapToObj(StateEncoder::oneHot).flatMapToDouble(Arrays::stream).toArray();
+        .map(StateEncoder::oneHot).flatMapToDouble(Arrays::stream).toArray();
 
     double[] encoded = Doubles.concat(cells, specialCells, scores);
 
@@ -50,12 +55,12 @@ public class StateEncoder {
     double[] cells = Arrays.stream(state.cells).mapToObj(StateEncoder::bitArrayOf)
         .flatMapToDouble(Arrays::stream).toArray();
 
-    double[] scores = Arrays.stream(state.score)
+    double[] scores = state.score.values().stream()
         .mapToDouble(score -> score > 81 ? 1.0 : 1.0 * score / 81.0).toArray();
 
-    double[] specialCells = Arrays.stream(state.specialCells)
+    double[] specialCells = state.specialCells.values().stream()
         .map(specialCell -> specialCell > 8 ? specialCell - 9 : specialCell)
-        .mapToObj(StateEncoder::oneHot).flatMapToDouble(Arrays::stream).toArray();
+        .map(StateEncoder::oneHot).flatMapToDouble(Arrays::stream).toArray();
 
     double[] nextMove = new double[]{state.nextMove.index};
 

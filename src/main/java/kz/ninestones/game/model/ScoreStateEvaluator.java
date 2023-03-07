@@ -16,13 +16,6 @@ public class ScoreStateEvaluator implements StateEvaluator {
       return gameOver.get().equals(player) ? 1 : 0;
     }
 
-    int diff = -state.score[player.opponent.index];
-    if (diff > 81) {
-      return 1;
-    }
-    if (diff < -81) {
-      return 0;
-    }
-    return state.score[player.index] > 81 ? 1.0 : state.score[player.index] / 81.0;
+    return state.score.get(player) > 81 ? 1.0 : state.score.get(player) / 82.0;
   }
 }

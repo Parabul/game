@@ -16,7 +16,7 @@ public class ScoreDiffStateEvaluator implements StateEvaluator {
       return gameOver.get().equals(player) ? 1 : 0;
     }
 
-    int diff = state.score[player.index] - state.score[player.opponent.index];
+    int diff = state.score.get(player) - state.score.get(player.opponent);
     if (diff > 81) {
       return 1;
     }

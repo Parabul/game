@@ -16,33 +16,33 @@ public class StateTest {
     assertThat(state.cells).asList()
         .containsExactly(9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9).inOrder();
 
-    assertThat(state.score).hasLength(2);
-    assertThat(state.score[Player.ONE.index]).isEqualTo(0);
-    assertThat(state.score[Player.TWO.index]).isEqualTo(0);
+    assertThat(state.score.get(Player.ONE)).isEqualTo(0);
+    assertThat(state.score.get(Player.TWO)).isEqualTo(0);
 
-    assertThat(state.specialCells).hasLength(2);
-    assertThat(state.specialCells[Player.ONE.index]).isEqualTo(-1);
-    assertThat(state.specialCells[Player.TWO.index]).isEqualTo(-1);
+    assertThat(state.specialCells.get(Player.ONE)).isNull();
+    assertThat(state.specialCells.get(Player.TWO)).isNull();
+
+    assertThat(state.isSpecial(0).isPresent()).isFalse();
+    assertThat(state.isSpecial(1).isPresent()).isFalse();
 
     assertThat(state.nextMove).isEqualTo(Player.ONE);
   }
 
   @Test
   public void sparseValuesConstructor() {
-    State state = new State(ImmutableMap.of(0, 1, 1, 2, 2, 3), new int[]{24, 21}, new int[]{12, -1},
+    State state = new State(ImmutableMap.of(0, 1, 1, 2, 2, 3),
+        ImmutableMap.of(Player.ONE, 24, Player.TWO, 21), ImmutableMap.of(Player.ONE, 12),
         Player.TWO);
 
     assertThat(state.cells).hasLength(18);
     assertThat(state.cells).asList()
         .containsExactly(1, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0).inOrder();
 
-    assertThat(state.score).hasLength(2);
-    assertThat(state.score[Player.ONE.index]).isEqualTo(24);
-    assertThat(state.score[Player.TWO.index]).isEqualTo(21);
+    assertThat(state.score.get(Player.ONE)).isEqualTo(24);
+    assertThat(state.score.get(Player.TWO)).isEqualTo(21);
 
-    assertThat(state.specialCells).hasLength(2);
-    assertThat(state.specialCells[Player.ONE.index]).isEqualTo(12);
-    assertThat(state.specialCells[Player.TWO.index]).isEqualTo(-1);
+    assertThat(state.specialCells.get(Player.ONE)).isEqualTo(12);
+    assertThat(state.specialCells.get(Player.TWO)).isNull();
     assertThat(state.isSpecial(12)).isEqualTo(Optional.of(Player.ONE));
 
     assertThat(state.nextMove).isEqualTo(Player.TWO);
@@ -56,8 +56,8 @@ public class StateTest {
       assertThat(state.isSpecial(i).isPresent()).isFalse();
     }
 
-    state.specialCells[0] = 12;
-    state.specialCells[1] = 5;
+    state.specialCells.put(Player.ONE, 12);
+    state.specialCells.put(Player.TWO, 5);
     assertThat(state.isSpecial(7)).isEqualTo(Optional.empty());
     assertThat(state.isSpecial(12)).isEqualTo(Optional.of(Player.ONE));
     assertThat(state.isSpecial(5)).isEqualTo(Optional.of(Player.TWO));

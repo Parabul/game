@@ -20,7 +20,8 @@ public class ScoreDiffStateEvaluatorTest {
 
   @Test
   public void evaluateMaxDiff() {
-    State state = new State(ImmutableMap.of(0, 1, 1, 2, 2, 3), new int[]{82, 0}, new int[]{12, -1},
+    State state = new State(ImmutableMap.of(0, 1, 1, 2, 2, 3),
+        ImmutableMap.of(Player.ONE, 82, Player.TWO, 0), ImmutableMap.of(Player.ONE, 12),
         Player.ONE);
 
     ScoreDiffStateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();
@@ -31,7 +32,8 @@ public class ScoreDiffStateEvaluatorTest {
 
   @Test
   public void evaluateNegativeDiff() {
-    State state = new State(ImmutableMap.of(0, 1, 1, 2, 2, 3), new int[]{10, 50}, new int[]{12, -1},
+    State state = new State(ImmutableMap.of(0, 1, 1, 2, 2, 3),
+        ImmutableMap.of(Player.ONE, 10, Player.TWO, 50), ImmutableMap.of(Player.ONE, 12),
         Player.ONE);
 
     ScoreDiffStateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();

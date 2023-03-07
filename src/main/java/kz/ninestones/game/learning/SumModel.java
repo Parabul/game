@@ -66,8 +66,7 @@ public class SumModel {
 
     System.out.println("Init: " + watch);
 
-//    for (int j = 0; j < 10; j++) {
-    int j = 0;
+    for (int j = 0; j < 10; j++) {
       DataSetIterator iterator = TrainingSet.getTrainingData(nSamples, batchSize);
 
       //Train the network on the full data set, and evaluate in periodically
@@ -86,18 +85,18 @@ public class SumModel {
         INDArray out2 = net.output(input2, false);
         System.out.println(out2);
       }
-//    }
+    }
     // Test the addition of 2 numbers (Try different numbers here)
     final INDArray input = StateEncoder.leanEncode(new State());
     INDArray out = net.output(input, false);
-//    System.out.println(out);
+    System.out.println(out);
 
     watch.stop();
 
     System.out.println();
     System.out.println("Stopwatch: " + watch);
 
-    net.save(new File("/home/anarbek/projects/ninestones/models/first.model"));
+    net.save(new File("/home/anarbek/projects/ninestones/models/second.model"));
   }
 
 }

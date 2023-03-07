@@ -30,15 +30,17 @@ public class LoadRunner {
     System.out.println(times);
 
     StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
-    StateEvaluator scoreStateEvaluator = new ScoreStateEvaluator();
-    StateEvaluator neuralNetStateEvaluator = new NeuralNetStateEvaluator();
+//    StateEvaluator scoreStateEvaluator = new ScoreStateEvaluator();
+    StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator("/home/anarbek/projects/ninestones/models/first.model");
+    StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator("/home/anarbek/projects/ninestones/models/second.model");
 
     Model minMaxScore = new MinMaxModel(diffStateEvaluator);
 
-    Model minMaxNet = new MinMaxModel(neuralNetStateEvaluator);
+    Model minMaxFirstNet = new MinMaxModel(firstNeuralNetEvaluator);
+    Model minMaxSecondNet = new MinMaxModel(secondNeuralNetEvaluator);
 
     SimulateGame simulator = new SimulateGame(
-        ImmutableMap.of(Player.ONE, minMaxNet, Player.TWO, minMaxScore));
+        ImmutableMap.of(Player.ONE, minMaxFirstNet, Player.TWO, minMaxSecondNet));
 
     int playerOneWon = 0;
     int playerTwoWon = 0;
@@ -115,3 +117,27 @@ public class LoadRunner {
 //    Score 54504 : 45496
 //    approxStates: 11894258
 //    avgSteps: 124.67691
+
+// NN vs ScoreDiff MiniMax
+//Stopwatch: 3.323 s
+//    Score 0 : 1
+//    approxStates: 130
+//    avgSteps: 130.0
+//    -----
+//    10
+//    init complete
+//
+//    Stopwatch: 14.11 s
+//    Score 3 : 7
+//    approxStates: 1566
+//    avgSteps: 164.5
+//    -----
+//    100
+//    init complete
+//
+//    Stopwatch: 2.628 min
+//    Score 30 : 70
+//    approxStates: 16904
+//    avgSteps: 182.91
+//
+//    Process finished with exit code 0

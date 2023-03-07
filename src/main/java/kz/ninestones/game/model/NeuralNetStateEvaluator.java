@@ -16,6 +16,11 @@ public class NeuralNetStateEvaluator implements StateEvaluator {
         new File("/home/anarbek/projects/ninestones/models/first.model"), false);
   }
 
+  public NeuralNetStateEvaluator(String modelPath) throws IOException {
+    this.model = MultiLayerNetwork.load(
+        new File(modelPath), false);
+  }
+
   @Override
   public double evaluate(State state, Player player) {
     double score = model.output(StateEncoder.leanEncode(state), false).getDouble(0, 0);

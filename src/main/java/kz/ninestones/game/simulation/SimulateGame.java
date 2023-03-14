@@ -6,13 +6,13 @@ import java.util.Map;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
-import kz.ninestones.game.model.Model;
+import kz.ninestones.game.modeling.strategy.Strategy;
 
 public class SimulateGame {
 
-  private final EnumMap<Player, Model> models;
+  private final EnumMap<Player, Strategy> models;
 
-  public SimulateGame(Map<Player, Model> models) {
+  public SimulateGame(Map<Player, Strategy> models) {
     this.models = new EnumMap<>(models);
   }
 

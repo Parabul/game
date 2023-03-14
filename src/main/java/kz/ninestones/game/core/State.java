@@ -17,29 +17,14 @@ import java.util.Optional;
 
 public class State implements Serializable {
 
-  public static final Funnel<State> stateFunnel = (State from, PrimitiveSink into) -> {
-    Arrays.stream(from.cells).forEachOrdered(into::putInt);
-    into.putInt(from.score.get(Player.ONE));
-    into.putInt(from.score.get(Player.TWO));
-
-    into.putInt(from.specialCells.getOrDefault(Player.ONE, -1));
-    into.putInt(from.specialCells.getOrDefault(Player.TWO, -1));
-
-    into.putString(from.nextMove.name(), StandardCharsets.UTF_8);
-  };
-
-
   // 0-8  player one
   // 9-17 player two
   public final int[] cells;
-
   public final EnumMap<Player, Integer> score;
-
   // -1 special cell not set
   // For ONE possible range: [9-17]
   // For TWO possible range: [0-8]
   public final EnumMap<Player, Integer> specialCells;
-
   public Player nextMove;
 
   public State() {
@@ -60,7 +45,6 @@ public class State implements Serializable {
     specialCells = new EnumMap(original.specialCells);
     nextMove = original.nextMove;
   }
-
 
   // Sparse init
   public State(Map<Integer, Integer> nonZeroValues, Map<Player, Integer> score,
@@ -110,7 +94,6 @@ public class State implements Serializable {
 
     throw new IllegalStateException("Unknown isSpecial for " + cell);
   }
-
 
   @Override
   public String toString() {
@@ -166,7 +149,22 @@ public class State implements Serializable {
   }
 
   public HashCode getHashCode() {
-    return Hashing.sha384().newHasher().putObject(this, stateFunnel).hash();
+    return Hashing.sha384().newHasher().putObject(this, StateFunnel.INSTANCE).hash();
+  }
+
+  public enum StateFunnel implements Funnel<State> {
+    INSTANCE;
+
+    public void funnel(State from, PrimitiveSink into) {
+      Arrays.stream(from.cells).forEachOrdered(into::putInt);
+      into.putInt(from.score.get(Player.ONE));
+      into.putInt(from.score.get(Player.TWO));
+
+      into.putInt(from.specialCells.getOrDefault(Player.ONE, -1));
+      into.putInt(from.specialCells.getOrDefault(Player.TWO, -1));
+
+      into.putString(from.nextMove.name(), StandardCharsets.UTF_8);
+    }
   }
 
 }

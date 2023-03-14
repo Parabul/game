@@ -1,10 +1,11 @@
-package kz.ninestones.game.model;
+package kz.ninestones.game.modeling.evaluation;
 
 import java.io.File;
 import java.io.IOException;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.learning.encode.StateEncoder;
+import kz.ninestones.game.modeling.evaluation.StateEvaluator;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 
 public class NeuralNetStateEvaluator implements StateEvaluator {

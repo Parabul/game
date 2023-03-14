@@ -6,13 +6,13 @@ import com.google.common.hash.BloomFilter;
 import java.io.IOException;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
-import kz.ninestones.game.model.MaxModel;
-import kz.ninestones.game.model.MinMaxModel;
-import kz.ninestones.game.model.Model;
-import kz.ninestones.game.model.NeuralNetStateEvaluator;
-import kz.ninestones.game.model.ScoreDiffStateEvaluator;
-import kz.ninestones.game.model.ScoreStateEvaluator;
-import kz.ninestones.game.model.StateEvaluator;
+import kz.ninestones.game.core.State.StateFunnel;
+import kz.ninestones.game.modeling.evaluation.NeuralNetStateEvaluator;
+import kz.ninestones.game.modeling.evaluation.ScoreDiffStateEvaluator;
+import kz.ninestones.game.modeling.evaluation.StateEvaluator;
+import kz.ninestones.game.modeling.strategy.MatrixMinMaxStrategy;
+import kz.ninestones.game.modeling.strategy.RandomMoveStrategy;
+import kz.ninestones.game.modeling.strategy.Strategy;
 
 public class LoadRunner {
 
@@ -21,7 +21,7 @@ public class LoadRunner {
     run(1);
     run(10);
     run(100);
-//    run(100000);
+    run(100000);
 //    run(1000000);
   }
 
@@ -31,22 +31,25 @@ public class LoadRunner {
 
     StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
 //    StateEvaluator scoreStateEvaluator = new ScoreStateEvaluator();
-    StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator("/home/anarbek/projects/ninestones/models/first.model");
-    StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator("/home/anarbek/projects/ninestones/models/second.model");
+    StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
+        "/home/anarbek/projects/ninestones/models/first.model");
+    StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
+        "/home/anarbek/projects/ninestones/models/second.model");
 
-    Model minMaxScore = new MinMaxModel(diffStateEvaluator);
+    Strategy minMaxScore = new MatrixMinMaxStrategy(diffStateEvaluator);
 
-    Model minMaxFirstNet = new MinMaxModel(firstNeuralNetEvaluator);
-    Model minMaxSecondNet = new MinMaxModel(secondNeuralNetEvaluator);
+    Strategy minMaxFirstNet = new MatrixMinMaxStrategy(firstNeuralNetEvaluator);
+    Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
 
     SimulateGame simulator = new SimulateGame(
-        ImmutableMap.of(Player.ONE, minMaxFirstNet, Player.TWO, minMaxSecondNet));
+        ImmutableMap.of(Player.ONE, new RandomMoveStrategy(), Player.TWO,
+            new RandomMoveStrategy()));
 
     int playerOneWon = 0;
     int playerTwoWon = 0;
     int totalSteps = 0;
 
-    BloomFilter<State> bloomFilter = BloomFilter.create(State.stateFunnel, 20000000, 0.0001);
+    BloomFilter<State> bloomFilter = BloomFilter.create(StateFunnel.INSTANCE, 20000000, 0.0001);
 
     System.out.println("init complete");
     Stopwatch watch = Stopwatch.createStarted();

@@ -22,76 +22,85 @@
       <version>30.0-jre</version>
     </dependency>
 
+
+    <!--    https://google.github.io/mug/-->
+    <dependency>
+      <artifactId>mug</artifactId>
+      <groupId>com.google.mug</groupId>
+      <version>6.5</version>
+    </dependency>
+
+
     <!-- https://mvnrepository.com/artifact/junit/junit -->
     <dependency>
-      <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <groupId>junit</groupId>
       <scope>test</scope>
+      <version>4.12</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.truth/truth -->
     <dependency>
-      <groupId>com.google.truth</groupId>
       <artifactId>truth</artifactId>
-      <version>1.1.3</version>
+      <groupId>com.google.truth</groupId>
       <scope>test</scope>
+      <version>1.1.3</version>
     </dependency>
 
     <dependency>
-      <groupId>org.nd4j</groupId>
       <artifactId>${nd4j.backend}</artifactId>
+      <groupId>org.nd4j</groupId>
       <version>${dl4j-master.version}</version>
     </dependency>
 
 
     <dependency>
-      <groupId>org.datavec</groupId>
       <artifactId>datavec-api</artifactId>
+      <groupId>org.datavec</groupId>
       <version>${dl4j-master.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.datavec</groupId>
       <artifactId>datavec-data-image</artifactId>
-      <version>${dl4j-master.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.datavec</groupId>
+      <version>${dl4j-master.version}</version>
+    </dependency>
+    <dependency>
       <artifactId>datavec-local</artifactId>
+      <groupId>org.datavec</groupId>
       <version>${dl4j-master.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deeplearning4j</groupId>
       <artifactId>deeplearning4j-datasets</artifactId>
+      <groupId>org.deeplearning4j</groupId>
       <version>${dl4j-master.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.deeplearning4j</groupId>
       <artifactId>deeplearning4j-core</artifactId>
+      <groupId>org.deeplearning4j</groupId>
       <version>${dl4j-master.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.deeplearning4j</groupId>
       <artifactId>resources</artifactId>
+      <groupId>org.deeplearning4j</groupId>
       <version>${dl4j-master.version}</version>
     </dependency>
 
     <!-- ParallelWrapper & ParallelInference live here -->
     <dependency>
-      <groupId>org.deeplearning4j</groupId>
       <artifactId>deeplearning4j-parallel-wrapper</artifactId>
+      <groupId>org.deeplearning4j</groupId>
       <version>${dl4j-master.version}</version>
     </dependency>
     <!-- Used in the feedforward/classification/MLP* and feedforward/regression/RegressionMathFunctions example -->
     <dependency>
-      <groupId>jfree</groupId>
       <artifactId>jfreechart</artifactId>
+      <groupId>jfree</groupId>
       <version>${jfreechart.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.jfree</groupId>
       <artifactId>jcommon</artifactId>
+      <groupId>org.jfree</groupId>
       <version>${jcommon.version}</version>
     </dependency>
 
@@ -101,14 +110,31 @@
   <packaging>jar</packaging>
 
 
+  <properties>
+    <dl4j-master.version>1.0.0-M2.1</dl4j-master.version>
+    <exec-maven-plugin.version>1.4.0</exec-maven-plugin.version>
+    <java.version>1.8</java.version>
+    <jcommon.version>1.0.23</jcommon.version>
+    <jfreechart.version>1.0.13</jfreechart.version>
 
 
+    <!--    DL4J-->
+    <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
+    <!-- Change the nd4j.backend property to nd4j-cuda-X-platform to use CUDA GPUs -->
+    <!-- <nd4j.backend>nd4j-cuda-10.2-platform</nd4j.backend> -->
+    <maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <nd4j.backend>nd4j-native</nd4j.backend>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+
+  </properties>
 
   <repositories>
     <repository>
       <id>sonatype-nexus-snapshots</id>
       <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -116,31 +142,10 @@
         <enabled>true</enabled>
         <updatePolicy>daily</updatePolicy>  <!-- Optional, update daily -->
       </snapshots>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
 
 
-
   </repositories>
-
-  <properties>
-    <java.version>1.8</java.version>
-    <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-
-<!--    DL4J-->
-    <dl4j-master.version>1.0.0-M2.1</dl4j-master.version>
-    <!-- Change the nd4j.backend property to nd4j-cuda-X-platform to use CUDA GPUs -->
-    <!-- <nd4j.backend>nd4j-cuda-10.2-platform</nd4j.backend> -->
-    <nd4j.backend>nd4j-native</nd4j.backend>
-    <exec-maven-plugin.version>1.4.0</exec-maven-plugin.version>
-    <maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
-    <jcommon.version>1.0.23</jcommon.version>
-    <jfreechart.version>1.0.13</jfreechart.version>
-
-
-  </properties>
   <version>1.0</version>
 </project>

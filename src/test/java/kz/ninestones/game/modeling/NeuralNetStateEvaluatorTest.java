@@ -1,4 +1,4 @@
-package kz.ninestones.game.model;
+package kz.ninestones.game.modeling;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
+import kz.ninestones.game.modeling.evaluation.NeuralNetStateEvaluator;
 import org.junit.Test;
 
 public class NeuralNetStateEvaluatorTest {

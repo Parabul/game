@@ -1,9 +1,10 @@
-package kz.ninestones.game.model;
+package kz.ninestones.game.modeling.evaluation;
 
 import java.util.Optional;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
+import kz.ninestones.game.modeling.evaluation.StateEvaluator;
 
 public class ScoreStateEvaluator implements StateEvaluator {
 

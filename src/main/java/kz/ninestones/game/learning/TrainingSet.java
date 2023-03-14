@@ -7,10 +7,10 @@ import java.util.Collections;
 import java.util.List;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.learning.encode.StateEncoder;
-import kz.ninestones.game.model.MinMaxModel;
-import kz.ninestones.game.model.ScoreDiffStateEvaluator;
-import kz.ninestones.game.model.StateEvaluator;
-import kz.ninestones.game.simulation.RecordedGame;
+import kz.ninestones.game.modeling.strategy.MatrixMinMaxStrategy;
+import kz.ninestones.game.modeling.evaluation.ScoreDiffStateEvaluator;
+import kz.ninestones.game.modeling.evaluation.StateEvaluator;
+import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.simulation.SimulateAndRecordGame;
 import org.deeplearning4j.datasets.iterator.utilty.ListDataSetIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -27,7 +27,7 @@ public class TrainingSet {
     List<INDArray> outputs = new ArrayList<>();
 
     StateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();
-    MinMaxModel model = new MinMaxModel(stateEvaluator);
+    MatrixMinMaxStrategy model = new MatrixMinMaxStrategy(stateEvaluator);
 
     SimulateAndRecordGame simulateAndRecordGame = new SimulateAndRecordGame(
         ImmutableMap.of(Player.ONE, model, Player.TWO, model));

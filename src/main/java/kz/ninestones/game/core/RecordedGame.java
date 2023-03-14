@@ -1,4 +1,4 @@
-package kz.ninestones.game.simulation;
+package kz.ninestones.game.core;
 
 import java.util.List;
 import kz.ninestones.game.core.Player;

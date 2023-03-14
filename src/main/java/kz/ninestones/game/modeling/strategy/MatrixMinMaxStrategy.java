@@ -1,4 +1,4 @@
-package kz.ninestones.game.model;
+package kz.ninestones.game.modeling.strategy;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,12 +8,11 @@ import java.util.OptionalDouble;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
+import kz.ninestones.game.modeling.evaluation.StateEvaluator;
 
-public class MinMaxModel implements Model {
-
+public class MatrixMinMaxStrategy implements Strategy {
   private final StateEvaluator stateEvaluator;
-
-  public MinMaxModel(StateEvaluator stateEvaluator) {
+  public MatrixMinMaxStrategy(StateEvaluator stateEvaluator) {
     this.stateEvaluator = stateEvaluator;
   }
 

@@ -1,4 +1,4 @@
-package kz.ninestones.game.learning;
+package kz.ninestones.game.learning.encode;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Doubles;
@@ -62,7 +62,7 @@ public class StateEncoder {
         .map(specialCell -> specialCell > 8 ? specialCell - 9 : specialCell)
         .map(StateEncoder::oneHot).flatMapToDouble(Arrays::stream).toArray();
 
-    double[] nextMove = new double[]{state.nextMove.index};
+    double[] nextMove = new double[]{state.nextMove.ordinal()};
 
     double[] encoded = Doubles.concat(cells, specialCells, scores, nextMove);
 

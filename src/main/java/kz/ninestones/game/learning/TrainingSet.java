@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import kz.ninestones.game.core.Player;
+import kz.ninestones.game.learning.encode.StateEncoder;
 import kz.ninestones.game.model.MinMaxModel;
 import kz.ninestones.game.model.ScoreDiffStateEvaluator;
 import kz.ninestones.game.model.StateEvaluator;

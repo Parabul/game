@@ -20,14 +20,14 @@ public class StateEncoder {
 
   public static INDArray encode(List<State> states) {
 
-    ImmutableList<INDArray> encodedStates = states.stream().map(StateEncoder::leanEncode)
+    ImmutableList<INDArray> encodedStates = states.stream().map(StateEncoder::encode)
         .collect(ImmutableList.toImmutableList());
 
     return Nd4j.vstack(encodedStates);
 
   }
 
-  public static INDArray leanEncode(State state) {
+  public static INDArray encode(State state) {
     // 2 X 9 (cells) + 2 X 8 (special cell) + 2 X 1 (score) + 1 (nextMove)
 
     double sum = Arrays.stream(state.cells).sum();
@@ -47,30 +47,6 @@ public class StateEncoder {
     double[] encoded = Doubles.concat(cells, specialCells, scores);
 
     return Nd4j.create(encoded, 1, 36);
-  }
-
-  public static INDArray encode(State state) {
-    // 2 X 9 X 8 (cells) + 2 X 8 (special cell) + 2 X 1 (score) + 1 (nextMove)
-
-    double[] cells = Arrays.stream(state.cells).mapToObj(StateEncoder::bitArrayOf)
-        .flatMapToDouble(Arrays::stream).toArray();
-
-    double[] scores = state.score.values().stream()
-        .mapToDouble(score -> score > 81 ? 1.0 : 1.0 * score / 81.0).toArray();
-
-    double[] specialCells = state.specialCells.values().stream()
-        .map(specialCell -> specialCell > 8 ? specialCell - 9 : specialCell)
-        .map(StateEncoder::oneHot).flatMapToDouble(Arrays::stream).toArray();
-
-    double[] nextMove = new double[]{state.nextMove.ordinal()};
-
-    double[] encoded = Doubles.concat(cells, specialCells, scores, nextMove);
-
-    return Nd4j.create(encoded, 1, 163);
-  }
-
-  private static double[] bitArrayOf(int input) {
-    return IntStream.range(0, 8).mapToDouble(i -> (input & (1 << i)) == 0 ? 0.0 : 1.0).toArray();
   }
 
   private static double[] oneHot(int index) {

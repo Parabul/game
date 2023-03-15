@@ -11,7 +11,7 @@ import kz.ninestones.game.modeling.strategy.MatrixMinMaxStrategy;
 import kz.ninestones.game.modeling.evaluation.ScoreDiffStateEvaluator;
 import kz.ninestones.game.modeling.evaluation.StateEvaluator;
 import kz.ninestones.game.core.RecordedGame;
-import kz.ninestones.game.simulation.SimulateAndRecordGame;
+import kz.ninestones.game.simulation.GameSimulator;
 import org.deeplearning4j.datasets.iterator.utilty.ListDataSetIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -29,15 +29,15 @@ public class TrainingSet {
     StateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();
     MatrixMinMaxStrategy model = new MatrixMinMaxStrategy(stateEvaluator);
 
-    SimulateAndRecordGame simulateAndRecordGame = new SimulateAndRecordGame(
+    GameSimulator gameSimulator = new GameSimulator(
         ImmutableMap.of(Player.ONE, model, Player.TWO, model));
 
     for (int i = 0; i < samples; i++) {
-      RecordedGame record = simulateAndRecordGame.record();
+      RecordedGame record = gameSimulator.simulate();
       int steps = record.getSteps().size();
 
       double[] results = new double[steps];
-      Arrays.fill(results, record.getWinner().equals(Player.ONE) ? 1.0 : 0.0);
+      Arrays.fill(results, Player.ONE.equals(record.getWinner()) ? 1.0 : 0.0);
 
       INDArray output = Nd4j.create(results, steps, 1);
 
@@ -56,6 +56,6 @@ public class TrainingSet {
     DataSet dataSet = new DataSet(input, output);
     List<DataSet> listDs = dataSet.asList();
     Collections.shuffle(listDs);
-    return new ListDataSetIterator(listDs, batchSize);
+    return new ListDataSetIterator<>(listDs, batchSize);
   }
 }

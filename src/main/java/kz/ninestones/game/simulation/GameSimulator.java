@@ -9,21 +9,21 @@ import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.modeling.strategy.Strategy;
 
-public class SimulateAndRecordGame {
+public class GameSimulator {
 
   private final EnumMap<Player, Strategy> models;
 
-  public SimulateAndRecordGame(Map<Player, Strategy> models) {
+  public GameSimulator(Map<Player, Strategy> models) {
     this.models = new EnumMap<>(models);
   }
 
-  public RecordedGame record() {
+  public RecordedGame simulate() {
 
     ImmutableList.Builder<State> states = ImmutableList.builder();
 
     State state = new State();
 
-    while (!Policy.isGameOver(state).isPresent()) {
+    while (!Policy.isGameOver(state)) {
 
       states.add(state);
 
@@ -32,6 +32,6 @@ public class SimulateAndRecordGame {
       state = Policy.makeMove(state, move);
     }
 
-    return new RecordedGame(Policy.isGameOver(state).get(), states.build());
+    return new RecordedGame(Policy.winnerOf(state).orElse(null), states.build());
   }
 }

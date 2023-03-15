@@ -1,11 +1,11 @@
 package kz.ninestones.game.core;
 
 import java.util.List;
-import kz.ninestones.game.core.Player;
-import kz.ninestones.game.core.State;
+import javax.annotation.Nullable;
 
 public class RecordedGame {
 
+  @Nullable
   private final Player winner;
   private final List<State> steps;
 

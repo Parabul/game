@@ -30,10 +30,9 @@ public class MatrixMinMaxStrategy implements Strategy {
 
       State levelOneState = Policy.makeMove(state, firstMove + 1);
 
-      Optional<Player> gameOver = Policy.isGameOver(levelOneState);
-
-      if (gameOver.isPresent()) {
-        Arrays.fill(outcomes[firstMove], gameOver.get().equals(player) ? 1 : 0);
+      if (Policy.isGameOver(levelOneState)) {
+        Optional<Player> winner = Policy.winnerOf(levelOneState);
+        Arrays.fill(outcomes[firstMove], winner.isPresent() && winner.get().equals(player) ? 1 : 0);
         continue;
       }
 

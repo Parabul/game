@@ -5,13 +5,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.BloomFilter;
 import java.io.IOException;
 import kz.ninestones.game.core.Player;
+import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.core.State.StateFunnel;
 import kz.ninestones.game.modeling.evaluation.NeuralNetStateEvaluator;
 import kz.ninestones.game.modeling.evaluation.ScoreDiffStateEvaluator;
 import kz.ninestones.game.modeling.evaluation.StateEvaluator;
 import kz.ninestones.game.modeling.strategy.MatrixMinMaxStrategy;
-import kz.ninestones.game.modeling.strategy.RandomMoveStrategy;
 import kz.ninestones.game.modeling.strategy.Strategy;
 
 public class LoadRunner {
@@ -21,8 +21,8 @@ public class LoadRunner {
     run(1);
     run(10);
     run(100);
-    run(100000);
-//    run(1000000);
+    //  run(1000);
+    //   run(100000);
   }
 
   public static void run(int times) throws IOException {
@@ -30,7 +30,6 @@ public class LoadRunner {
     System.out.println(times);
 
     StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
-//    StateEvaluator scoreStateEvaluator = new ScoreStateEvaluator();
     StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
         "/home/anarbek/projects/ninestones/models/first.model");
     StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
@@ -41,9 +40,9 @@ public class LoadRunner {
     Strategy minMaxFirstNet = new MatrixMinMaxStrategy(firstNeuralNetEvaluator);
     Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
 
-    SimulateGame simulator = new SimulateGame(
-        ImmutableMap.of(Player.ONE, new RandomMoveStrategy(), Player.TWO,
-            new RandomMoveStrategy()));
+    GameSimulator simulator = new GameSimulator(
+        ImmutableMap.of(Player.ONE, minMaxFirstNet, Player.TWO,
+            minMaxSecondNet));
 
     int playerOneWon = 0;
     int playerTwoWon = 0;
@@ -51,29 +50,32 @@ public class LoadRunner {
 
     BloomFilter<State> bloomFilter = BloomFilter.create(StateFunnel.INSTANCE, 20000000, 0.0001);
 
+    System.out.println();
     System.out.println("init complete");
     Stopwatch watch = Stopwatch.createStarted();
 
     for (int i = 0; i < times; i++) {
-      SimulationResult result = simulator.simulate(bloomFilter);
+      RecordedGame recordedGame = simulator.simulate();
 
-      if (result.getWinner().equals(Player.ONE)) {
+      if (Player.ONE.equals(recordedGame.getWinner())) {
         playerOneWon++;
-      } else {
+      } else if (Player.TWO.equals(recordedGame.getWinner())) {
         playerTwoWon++;
       }
 
-      totalSteps += result.getSteps();
+      totalSteps += recordedGame.getSteps().size();
+      recordedGame.getSteps().forEach(bloomFilter::put);
     }
 
     watch.stop();
 
-    System.out.println();
     System.out.println("Stopwatch: " + watch);
     System.out.println("Score " + playerOneWon + " : " + playerTwoWon);
+    System.out.println("Draws " + (times - playerOneWon - playerTwoWon));
 
-    System.out.println("approxStates: " + bloomFilter.approximateElementCount());
-    System.out.println("avgSteps: " + 1.0 * totalSteps / times);
+    System.out.println("Approximate unique states per game: "
+        + 1.0 * bloomFilter.approximateElementCount() / times);
+    System.out.println("Average # of steps per game: " + 1.0 * totalSteps / times);
   }
 }
 

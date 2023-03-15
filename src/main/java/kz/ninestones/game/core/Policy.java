@@ -31,7 +31,23 @@ public class Policy {
     return state.cells[cell] != 0;
   }
 
-  public static Optional<Player> isGameOver(State state) {
+  public static boolean isGameOver(State state) {
+
+    if (state.score.get(Player.ONE) > 81 || state.score.get(Player.TWO) > 81) {
+      return true;
+    }
+
+    if (state.score.get(Player.ONE) == 81 && state.score.get(Player.TWO) == 81) {
+      return true;
+    }
+
+    return IntStream.rangeClosed(1, 9).noneMatch(move -> isAllowedMove(state, move));
+  }
+
+  public static Optional<Player> winnerOf(State state) {
+    if (!isGameOver(state)) {
+      return Optional.empty();
+    }
 
     if (state.score.get(Player.ONE) > 81) {
       return Optional.of(Player.ONE);
@@ -41,9 +57,14 @@ public class Policy {
       return Optional.of(Player.TWO);
     }
 
-    boolean hasMoves = IntStream.rangeClosed(1, 9).anyMatch(move -> isAllowedMove(state, move));
+    // Draw
+    if (state.score.get(Player.ONE) == 81 && state.score.get(Player.TWO) == 81) {
+      return Optional.empty();
+    }
 
-    if (!hasMoves) {
+    boolean hasNoMoves = IntStream.rangeClosed(1, 9).noneMatch(move -> isAllowedMove(state, move));
+
+    if (hasNoMoves) {
       return Optional.of(state.nextMove.opponent);
     }
 
@@ -63,7 +84,7 @@ public class Policy {
   }
 
   public static State makeMove(final State state, int move) {
-    checkArgument(!isGameOver(state).isPresent(), "Game over!");
+    checkArgument(!isGameOver(state), "Game over: \n %s\n", state.toString());
     checkArgument(isAllowedMove(state, move), "The move is not allowed!");
 
     State newState = new State(state);

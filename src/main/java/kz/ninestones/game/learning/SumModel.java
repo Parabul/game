@@ -76,18 +76,18 @@ public class SumModel {
         iterator.reset();
         net.fit(iterator);
 
-        final INDArray input = StateEncoder.leanEncode(new State());
+        final INDArray input = StateEncoder.encode(new State());
         INDArray out = net.output(input, false);
         System.out.println(out);
 
-        final INDArray input2 = StateEncoder.leanEncode(new State(ImmutableMap.of(0, 10, 12, 10),
+        final INDArray input2 = StateEncoder.encode(new State(ImmutableMap.of(0, 10, 12, 10),
             ImmutableMap.of(Player.ONE, 80, Player.TWO, 62), ImmutableMap.of(), Player.ONE));
         INDArray out2 = net.output(input2, false);
         System.out.println(out2);
       }
     }
     // Test the addition of 2 numbers (Try different numbers here)
-    final INDArray input = StateEncoder.leanEncode(new State());
+    final INDArray input = StateEncoder.encode(new State());
     INDArray out = net.output(input, false);
     System.out.println(out);
 

@@ -3,7 +3,6 @@ package kz.ninestones.game.core;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Optional;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -86,7 +85,7 @@ public class PolicyTest {
     newState = Policy.makeMove(newState, 2);
 
     assertThat(newState.nextMove).isEqualTo(Player.ONE);
-    assertThat(newState.score).isEqualTo(scoreOf(10,10));
+    assertThat(newState.score).isEqualTo(scoreOf(10, 10));
     assertThat(newState.specialCells).isEqualTo(ImmutableMap.of());
     assertThat(newState.cells).asList()
         .containsExactly(10, 10, 10, 10, 10, 10, 10, 1, 0, 0, 1, 10, 10, 10, 10, 10, 10, 10)
@@ -102,7 +101,7 @@ public class PolicyTest {
     State newState = Policy.makeMove(state, 9);
 
     assertThat(newState.nextMove).isEqualTo(Player.TWO);
-    assertThat(newState.score).isEqualTo(scoreOf(3,0));
+    assertThat(newState.score).isEqualTo(scoreOf(3, 0));
     assertThat(newState.specialCells).isEqualTo(specialOne(9));
     assertThat(newState.cells).asList()
         .containsExactly(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0).inOrder();
@@ -164,16 +163,21 @@ public class PolicyTest {
         .containsExactly(7, 1, 0, 0, 0, 0, 0, 0, 0, 5, 0, 1, 1, 1, 0, 0, 0, 0).inOrder();
   }
 
+  @Test
+  public void defaultStateIsNotGameOver() {
+    State state = new State();
+
+    assertThat(Policy.isGameOver(state)).isFalse();
+    assertThat(Policy.winnerOf(state).isPresent()).isFalse();
+  }
 
   @Test
   public void noMovesGameOverTwo() {
     State state = new State(ImmutableMap.of(0, 7), ImmutableMap.of(Player.ONE, 0, Player.TWO, 0),
         ImmutableMap.of(Player.ONE, 10), Player.TWO);
 
-    Optional<Player> gameOver = Policy.isGameOver(state);
-
-    assertThat(gameOver.isPresent()).isTrue();
-    assertThat(gameOver.get()).isEqualTo(Player.ONE);
+    assertThat(Policy.isGameOver(state)).isTrue();
+    assertThat(Policy.winnerOf(state).get()).isEqualTo(Player.ONE);
   }
 
   @Test
@@ -181,9 +185,16 @@ public class PolicyTest {
     State state = new State(ImmutableMap.of(11, 7), ImmutableMap.of(Player.ONE, 0, Player.TWO, 0),
         ImmutableMap.of(Player.ONE, 10), Player.ONE);
 
-    Optional<Player> gameOver = Policy.isGameOver(state);
+    assertThat(Policy.isGameOver(state)).isTrue();
+    assertThat(Policy.winnerOf(state).get()).isEqualTo(Player.TWO);
+  }
 
-    assertThat(gameOver.isPresent()).isTrue();
-    assertThat(gameOver.get()).isEqualTo(Player.TWO);
+  @Test
+  public void grawGameOver() {
+    State state = new State(ImmutableMap.of(0, 0), ImmutableMap.of(Player.ONE, 81, Player.TWO, 81),
+        ImmutableMap.of(Player.ONE, 10), Player.TWO);
+
+    assertThat(Policy.isGameOver(state)).isTrue();
+    assertThat(Policy.winnerOf(state).isPresent()).isFalse();
   }
 }

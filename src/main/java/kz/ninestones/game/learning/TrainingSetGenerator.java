@@ -6,11 +6,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import kz.ninestones.game.core.Player;
-import kz.ninestones.game.learning.encode.StateEncoder;
-import kz.ninestones.game.modeling.strategy.MatrixMinMaxStrategy;
+import kz.ninestones.game.core.RecordedGame;
+import kz.ninestones.game.learning.encode.GameEncoder;
 import kz.ninestones.game.modeling.evaluation.ScoreDiffStateEvaluator;
 import kz.ninestones.game.modeling.evaluation.StateEvaluator;
-import kz.ninestones.game.core.RecordedGame;
+import kz.ninestones.game.modeling.strategy.MatrixMinMaxStrategy;
 import kz.ninestones.game.simulation.GameSimulator;
 import org.deeplearning4j.datasets.iterator.utilty.ListDataSetIterator;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -18,30 +18,31 @@ import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
 
-public class TrainingSet {
+public class TrainingSetGenerator {
 
-  public static DataSetIterator getTrainingData(int samples, int batchSize) {
-    System.out.println("training set");
+  private final GameSimulator gameSimulator;
 
-    List<INDArray> inputs = new ArrayList<>();
-    List<INDArray> outputs = new ArrayList<>();
-
+  public TrainingSetGenerator() {
     StateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();
     MatrixMinMaxStrategy model = new MatrixMinMaxStrategy(stateEvaluator);
 
-    GameSimulator gameSimulator = new GameSimulator(
+    this.gameSimulator = new GameSimulator(
         ImmutableMap.of(Player.ONE, model, Player.TWO, model));
+  }
+
+  public DataSetIterator generateTrainingData(int samples, int batchSize) {
+    List<INDArray> inputs = new ArrayList<>(samples);
+    List<INDArray> outputs = new ArrayList<>(samples);
 
     for (int i = 0; i < samples; i++) {
       RecordedGame record = gameSimulator.simulate();
       int steps = record.getSteps().size();
 
-      double[] results = new double[steps];
-      Arrays.fill(results, Player.ONE.equals(record.getWinner()) ? 1.0 : 0.0);
+      double outcome = Player.ONE.equals(record.getWinner()) ? 1.0 : 0.0;
 
-      INDArray output = Nd4j.create(results, steps, 1);
+      INDArray output = Nd4j.valueArrayOf(steps, 1, outcome);
 
-      INDArray input = StateEncoder.encode(record.getSteps());
+      INDArray input = GameEncoder.toINDArray(record.getSteps());
 
       inputs.add(input);
       outputs.add(output);

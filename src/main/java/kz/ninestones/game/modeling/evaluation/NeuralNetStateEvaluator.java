@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
-import kz.ninestones.game.learning.encode.StateEncoder;
+import kz.ninestones.game.learning.encode.GameEncoder;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 
 public class NeuralNetStateEvaluator implements StateEvaluator {
@@ -23,7 +23,7 @@ public class NeuralNetStateEvaluator implements StateEvaluator {
 
   @Override
   public double evaluate(State state, Player player) {
-    double score = model.output(StateEncoder.encode(state), false).getDouble(0, 0);
+    double score = model.output(GameEncoder.toINDArray(state), false).getDouble(0, 0);
 
     return player.equals(Player.ONE) ? score : 1 - score;
   }

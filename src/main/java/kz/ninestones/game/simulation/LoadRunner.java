@@ -31,7 +31,7 @@ public class LoadRunner {
 
     StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
     StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
-        "/home/anarbek/projects/ninestones/models/first.model");
+        "/home/anarbek/projects/ninestones/models/three.model");
     StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
         "/home/anarbek/projects/ninestones/models/second.model");
 

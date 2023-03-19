@@ -18,7 +18,7 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
  * Created by Anwar on 3/15/2016. An example of regression neural network for performing addition
  */
 //@SuppressWarnings({"DuplicatedCode", "FieldCanBeLocal"})
-public class SumModel {
+public class SingleIterationModel {
 
   //Random number generator seed, for reproduceability
   public static final int seed = 12345;
@@ -34,12 +34,8 @@ public class SumModel {
 
 
   public static void main(String[] args) throws IOException {
-    System.out.println("-----");
-
     Stopwatch watch = Stopwatch.createStarted();
     System.out.println("Start: " + watch);
-
-    //Generate the training data
 
     //Create the network
     int numInput = 36;
@@ -60,18 +56,15 @@ public class SumModel {
 //    net.setListeners(new ScoreIterationListener(1));
 
     System.out.println("Init: " + watch);
-    TrainingSetGenerator trainingSetGenerator = new TrainingSetGenerator();
 
-    for (int j = 0; j < 10; j++) {
-      DataSetIterator iterator = trainingSetGenerator.generateTrainingData(nSamples, batchSize);
+    DataSetIterator iterator = (new TrainingSetGenerator()).generateTrainingData(nSamples, batchSize);
 
-      //Train the network on the full data set, and evaluate in periodically
-      for (int i = 0; i < nEpochs; i++) {
-        System.out.println("training: " + j + " epoch: " + i + " -> " + watch);
-        System.out.println("score: " + net.score());
-        iterator.reset();
-        net.fit(iterator);
-      }
+    //Train the network on the full data set, and evaluate in periodically
+    for (int i = 0; i < nEpochs; i++) {
+      System.out.println("training: 1 " + " epoch: " + i + " -> " + watch);
+      System.out.println("score: " + net.score());
+      iterator.reset();
+      net.fit(iterator);
     }
 
     watch.stop();
@@ -79,7 +72,7 @@ public class SumModel {
     System.out.println();
     System.out.println("Stopwatch: " + watch);
 
-    net.save(new File("/home/anarbek/projects/ninestones/models/four.model"));
+    net.save(new File("/home/anarbek/projects/ninestones/models/three.model"));
   }
 
 }

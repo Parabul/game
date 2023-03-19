@@ -9,7 +9,7 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 public class EvaluateModel {
 
   public static void main(String[] args) throws IOException {
-    DataSetIterator iterator = TrainingSet.getTrainingData(1000, 100);
+    DataSetIterator iterator = (new TrainingSetGenerator()).generateTrainingData(1000, 100);
 
     MultiLayerNetwork model = MultiLayerNetwork.load(
         new File("/home/anarbek/projects/ninestones/models/second.model"), false);

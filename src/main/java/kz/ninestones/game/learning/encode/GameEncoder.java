@@ -1,6 +1,5 @@
 package kz.ninestones.game.learning.encode;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Doubles;
 import java.util.Arrays;
 import java.util.List;
@@ -12,22 +11,31 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 /**
- * Transforms a collection of states into double[163] array and wraps it into INDArray:
+ * Transforms a collection of states into double[36] array and wraps it into INDArray:
  * <p>
  * 2 X 9 X 8 (cells) + 2 X 8 (special cell) + 2 X 1 (score) + 1 (nextMove Player)
  */
-public class StateEncoder {
+public class GameEncoder {
 
-  public static INDArray encode(List<State> states) {
-
-    ImmutableList<INDArray> encodedStates = states.stream().map(StateEncoder::encode)
-        .collect(ImmutableList.toImmutableList());
-
-    return Nd4j.vstack(encodedStates);
-
+  public static INDArray toINDArray(List<State> states) {
+    return Nd4j.create(encode(states));
   }
 
-  public static INDArray encode(State state) {
+  public static INDArray toINDArray(State state) {
+    return Nd4j.create(encode(state), 1, 36);
+  }
+
+  public static double[][] encode(List<State> states) {
+    double[][] encodedState = new double[states.size()][36];
+
+    for (int i = 0; i < states.size(); i++) {
+      encodedState[i] = encode(states.get(i));
+    }
+
+    return encodedState;
+  }
+
+  public static double[] encode(State state) {
     // 2 X 9 (cells) + 2 X 8 (special cell) + 2 X 1 (score) + 1 (nextMove)
 
     double sum = Arrays.stream(state.cells).sum();
@@ -42,11 +50,9 @@ public class StateEncoder {
 
     double[] specialCells = Stream.of(playerOneSpecial, playerTwoSpecial)
         .map(specialCell -> specialCell > 8 ? specialCell - 9 : specialCell)
-        .map(StateEncoder::oneHot).flatMapToDouble(Arrays::stream).toArray();
+        .map(GameEncoder::oneHot).flatMapToDouble(Arrays::stream).toArray();
 
-    double[] encoded = Doubles.concat(cells, specialCells, scores);
-
-    return Nd4j.create(encoded, 1, 36);
+    return Doubles.concat(cells, specialCells, scores);
   }
 
   private static double[] oneHot(int index) {

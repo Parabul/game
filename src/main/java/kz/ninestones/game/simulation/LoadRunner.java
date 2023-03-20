@@ -31,9 +31,9 @@ public class LoadRunner {
 
     StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
     StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
-        "/home/anarbek/projects/ninestones/models/three.model");
+        "/home/anarbek/projects/ninestones/models/3.2.model");
     StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
-        "/home/anarbek/projects/ninestones/models/second.model");
+        "/home/anarbek/projects/ninestones/models/3.1.model");
 
     Strategy minMaxScore = new MatrixMinMaxStrategy(diffStateEvaluator);
 

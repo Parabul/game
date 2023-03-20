@@ -50,7 +50,7 @@ public class SingleIterationModel {
                     .build()).layer(1, new DenseLayer.Builder().nIn(nHidden).nOut(nHidden).activation(
                     Activation.RELU) //Change this to RELU and you will see the net learns very well very quickly
                 .build()).layer(2,
-                new OutputLayer.Builder(LossFunctions.LossFunction.MSE).activation(Activation.SIGMOID)
+                new OutputLayer.Builder(LossFunctions.LossFunction.XENT).activation(Activation.SIGMOID)
                     .nIn(nHidden).nOut(numOutputs).build()).build());
     net.init();
 //    net.setListeners(new ScoreIterationListener(1));
@@ -72,7 +72,7 @@ public class SingleIterationModel {
     System.out.println();
     System.out.println("Stopwatch: " + watch);
 
-    net.save(new File("/home/anarbek/projects/ninestones/models/three.model"));
+    net.save(new File("/home/anarbek/projects/ninestones/models/3.1.model"));
   }
 
 }

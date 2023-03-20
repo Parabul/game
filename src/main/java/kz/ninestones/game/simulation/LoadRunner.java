@@ -18,7 +18,7 @@ public class LoadRunner {
 
 
   public static void main(String[] args) throws IOException {
-    run(1);
+//    run(1);
     run(10);
     run(100);
     //  run(1000);
@@ -31,18 +31,22 @@ public class LoadRunner {
 
     StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
     StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
-        "/home/anarbek/projects/ninestones/models/3.2.model");
+        "/home/anarbek/projects/ninestones/models/3.3.model");
     StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
         "/home/anarbek/projects/ninestones/models/3.1.model");
+
+    StateEvaluator secondModel = new NeuralNetStateEvaluator(
+        "/home/anarbek/projects/ninestones/models/second.model");
 
     Strategy minMaxScore = new MatrixMinMaxStrategy(diffStateEvaluator);
 
     Strategy minMaxFirstNet = new MatrixMinMaxStrategy(firstNeuralNetEvaluator);
     Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
+    Strategy minMaxFirstModelNet = new MatrixMinMaxStrategy(secondModel);
 
     GameSimulator simulator = new GameSimulator(
-        ImmutableMap.of(Player.ONE, minMaxFirstNet, Player.TWO,
-            minMaxSecondNet));
+        ImmutableMap.of(Player.ONE, minMaxFirstModelNet, Player.TWO,
+            minMaxScore));
 
     int playerOneWon = 0;
     int playerTwoWon = 0;

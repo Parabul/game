@@ -12,7 +12,7 @@ public class EvaluateModel {
     DataSetIterator iterator = (new TrainingSetGenerator()).generateTrainingData(1000, 100);
 
     MultiLayerNetwork model = MultiLayerNetwork.load(
-        new File("/home/anarbek/projects/ninestones/models/3.2.model"), false);
+        new File("/home/anarbek/projects/ninestones/models/3.3.model"), false);
 
     Evaluation eval = model.evaluate(iterator);
 

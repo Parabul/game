@@ -27,7 +27,7 @@ public class MutliIterationModel {
   //Batch size: i.e., each epoch has nSamples/batchSize parameter updates
   public static final int batchSize = 10000;
   //Network learning rate
-  public static final double learningRate = 0.01;
+  public static final double learningRate = 0.001;
 
   //Number of data points
   private static final int nSamples = 5000;
@@ -47,7 +47,7 @@ public class MutliIterationModel {
     int nHidden = 108;
 
     MultiLayerNetwork net = new MultiLayerNetwork(
-        new NeuralNetConfiguration.Builder().seed(seed).l1(0.001).weightInit(WeightInit.XAVIER)
+        new NeuralNetConfiguration.Builder().seed(seed).l1(0.001).weightInit(WeightInit.RELU_UNIFORM)
             .updater(new Adam(learningRate)).list().layer(0,
                 new DenseLayer.Builder().nIn(numInput).nOut(nHidden).activation(
                         Activation.RELU) //Change this to RELU and you will see the net learns very well very quickly

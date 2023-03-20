@@ -15,8 +15,12 @@ public class NeuralNetStateEvaluator implements StateEvaluator {
     this("/home/anarbek/projects/ninestones/models/first.model");
   }
 
-  public NeuralNetStateEvaluator(String modelPath) throws IOException {
-    this.model = MultiLayerNetwork.load(new File(modelPath), false);
+  public NeuralNetStateEvaluator(String modelPath) {
+    try {
+      this.model = MultiLayerNetwork.load(new File(modelPath), false);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     System.out.println("modelPath: "+ modelPath);
   }
 

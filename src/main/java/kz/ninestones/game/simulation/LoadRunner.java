@@ -40,7 +40,8 @@ public class LoadRunner {
 
     Strategy minMaxScore = new MatrixMinMaxStrategy(diffStateEvaluator);
 
-    Strategy minMaxFirstNet = new MatrixMinMaxStrategy(firstNeuralNetEvaluator);
+    Strategy minMaxFirstNet = new MatrixMinMaxStrategy(new NeuralNetStateEvaluator(
+        "/home/anarbek/projects/ninestones/models/3.3.model"));
     Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
     Strategy minMaxFirstModelNet = new MatrixMinMaxStrategy(secondModel);
 

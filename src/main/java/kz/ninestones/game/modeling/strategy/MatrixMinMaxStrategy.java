@@ -11,7 +11,9 @@ import kz.ninestones.game.core.State;
 import kz.ninestones.game.modeling.evaluation.StateEvaluator;
 
 public class MatrixMinMaxStrategy implements Strategy {
+
   private final StateEvaluator stateEvaluator;
+
   public MatrixMinMaxStrategy(StateEvaluator stateEvaluator) {
     this.stateEvaluator = stateEvaluator;
   }
@@ -20,7 +22,7 @@ public class MatrixMinMaxStrategy implements Strategy {
   public int suggestNextMove(State state) {
     double[][] outcomes = new double[9][9];
 
-    Player player = state.nextMove;
+    final Player player = state.nextMove;
 
     for (int firstMove = 0; firstMove < 9; firstMove++) {
       if (!Policy.isAllowedMove(state, firstMove + 1)) {

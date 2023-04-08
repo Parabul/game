@@ -8,16 +8,9 @@ import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.core.State.StateFunnel;
-import kz.ninestones.game.modeling.evaluation.NeuralNetStateEvaluator;
-import kz.ninestones.game.modeling.evaluation.ScoreDiffStateEvaluator;
-import kz.ninestones.game.modeling.evaluation.StateEvaluator;
-import kz.ninestones.game.modeling.strategy.MatrixMinMaxStrategy;
-import kz.ninestones.game.modeling.strategy.Strategy;
 
 public class LoadRunner {
-
-
-  public static void main(String[] args) throws IOException {
+public static void main(String[] args) throws IOException {
 //    run(1);
     run(10);
     run(100);
@@ -29,25 +22,25 @@ public class LoadRunner {
     System.out.println("-----");
     System.out.println(times);
 
-    StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
-    StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
-        "/home/anarbek/projects/ninestones/models/3.3.model");
-    StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
-        "/home/anarbek/projects/ninestones/models/3.1.model");
-
-    StateEvaluator secondModel = new NeuralNetStateEvaluator(
-        "/home/anarbek/projects/ninestones/models/second.model");
-
-    Strategy minMaxScore = new MatrixMinMaxStrategy(diffStateEvaluator);
-
-    Strategy minMaxFirstNet = new MatrixMinMaxStrategy(new NeuralNetStateEvaluator(
-        "/home/anarbek/projects/ninestones/models/3.3.model"));
-    Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
-    Strategy minMaxFirstModelNet = new MatrixMinMaxStrategy(secondModel);
+//    StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
+//    StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
+//        "/home/anarbek/projects/ninestones/models/3.3.model");
+//    StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
+//        "/home/anarbek/projects/ninestones/models/3.1.model");
+//
+//    StateEvaluator secondModel = new NeuralNetStateEvaluator(
+//        "/home/anarbek/projects/ninestones/models/second.model");
+//
+//    Strategy minMaxScore = new MatrixMinMaxStrategy(diffStateEvaluator);
+//
+//    Strategy minMaxFirstNet = new MatrixMinMaxStrategy(new NeuralNetStateEvaluator(
+//        "/home/anarbek/projects/ninestones/models/3.3.model"));
+//    Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
+//    Strategy minMaxFirstModelNet = new MatrixMinMaxStrategy(secondModel);
 
     GameSimulator simulator = new GameSimulator(
-        ImmutableMap.of(Player.ONE, minMaxFirstModelNet, Player.TWO,
-            minMaxScore));
+        ImmutableMap.of(Player.ONE, KnownStrategy.NEURAL_NET_1.getStrategy(), Player.TWO,
+            KnownStrategy.MIN_MAX_SCORE_DIFF.getStrategy()));
 
     int playerOneWon = 0;
     int playerTwoWon = 0;

@@ -10,11 +10,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 import kz.ninestones.game.core.Constants;
+import kz.ninestones.game.modeling.DistributionSampling;
 
 public class ModelUtils {
 
   public static final Random RANDOM = new Random(Constants.SEED);
-
 
   public static int anyMaximizingKey(Map<Integer, Double> outcomes) {
     checkArgument(!outcomes.isEmpty(), "outcomes");
@@ -26,5 +26,11 @@ public class ModelUtils {
         .keys().collect(toImmutableList());
 
     return maximizingMoves.get(RANDOM.nextInt(maximizingMoves.size()));
+  }
+
+  public static int sampled(Map<Integer, Double> outcomes) {
+    checkArgument(!outcomes.isEmpty(), "outcomes");
+
+    return (new DistributionSampling(outcomes)).getDistributedRandomNumber();
   }
 }

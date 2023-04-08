@@ -10,7 +10,7 @@ import kz.ninestones.game.modeling.strategy.Strategy;
 
 public class ModelComparison {
 
-  private static final int ITERATIONS = 100;
+  private static final int ITERATIONS = 1000;
 
   public static void main(String[] args) {
     List<Strategy> strategies = Arrays.stream(KnownStrategy.values())
@@ -19,7 +19,7 @@ public class ModelComparison {
 
     double[][] comparisons = new double[n][n];
 
-    for (KnownStrategy knownStrategy: KnownStrategy.values()) {
+    for (KnownStrategy knownStrategy : KnownStrategy.values()) {
       System.out.println(knownStrategy.ordinal() + " -> " + knownStrategy.name());
     }
 
@@ -29,7 +29,7 @@ public class ModelComparison {
         Strategy playerOneStrategy = strategies.get(i);
         Strategy playerTwoStrategy = strategies.get(j);
         comparisons[i][j] = compare(playerOneStrategy, playerTwoStrategy);
-        System.out.print(String.format("| %.2f ", comparisons[i][j]));
+        System.out.printf("| %.2f ", comparisons[i][j]);
       }
     }
   }
@@ -69,3 +69,15 @@ public class ModelComparison {
     return 1.0 * playerOneWon / ITERATIONS;
   }
 }
+
+//    0 -> RANDOM
+//    1 -> MIN_MAX_SCORE_DIFF
+//    2 -> NEURAL_NET_2
+//    3 -> NEURAL_NET_3
+//    4 -> LATEST
+//
+//    | 0.53 | 0.00 | 0.00 | 0.00 | 0.00
+//    | 1.00 | 0.64 | 0.32 | 0.37 | 0.37
+//    | 1.00 | 0.83 | 0.00 | 0.01 | 0.00
+//    | 1.00 | 0.73 | 1.00 | 0.00 | 0.00
+//    | 1.00 | 0.93 | 0.00 | 1.00 | 0.51

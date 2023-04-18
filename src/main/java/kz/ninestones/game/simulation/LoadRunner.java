@@ -39,8 +39,8 @@ public static void main(String[] args) throws IOException {
 //    Strategy minMaxFirstModelNet = new MatrixMinMaxStrategy(secondModel);
 
     GameSimulator simulator = new GameSimulator(
-        ImmutableMap.of(Player.ONE, KnownStrategy.NEURAL_NET_1.getStrategy(), Player.TWO,
-            KnownStrategy.MIN_MAX_SCORE_DIFF.getStrategy()));
+        ImmutableMap.of(Player.ONE, KnownStrategy.MIN_MAX_SCORE_DIFF.getStrategy(), Player.TWO,
+            KnownStrategy.NEURAL_NET_1.getStrategy()));
 
     int playerOneWon = 0;
     int playerTwoWon = 0;

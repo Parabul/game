@@ -25,7 +25,7 @@ public enum KnownStrategy {
       "/home/anarbek/projects/ninestones/models/first.model"))),
 
   LATEST(new MatrixMinMaxStrategy(new NeuralNetStateEvaluator(
-      "/home/anarbek/projects/ninestones/models/3.3.model")));
+      "/home/anarbek/projects/ninestones/models/3.1.model")));
 
   private final Strategy strategy;
 

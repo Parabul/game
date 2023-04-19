@@ -11,3 +11,6 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 .idea
 /.idea/
+game.iml
+game.ipr
+game.iws

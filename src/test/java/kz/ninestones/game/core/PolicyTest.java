@@ -195,6 +195,7 @@ public class PolicyTest {
         ImmutableMap.of(Player.ONE, 10), Player.TWO);
 
     assertThat(Policy.isGameOver(state)).isTrue();
-    assertThat(Policy.winnerOf(state).isPresent()).isFalse();
+    assertThat(Policy.winnerOf(state).isPresent()).isTrue();
+    assertThat(Policy.winnerOf(state).get()).isEqualTo(Player.NONE);
   }
 }

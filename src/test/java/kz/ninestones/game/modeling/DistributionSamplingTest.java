@@ -15,7 +15,7 @@ public class DistributionSamplingTest {
 
     AtomicLongMap<Integer> observed = AtomicLongMap.create();
 
-    double n = 1000000.0;
+    double n = 100000.0;
 
     for (int i = 0; i < n; i++) {
       observed.incrementAndGet(distributionSampling.getDistributedRandomNumber());

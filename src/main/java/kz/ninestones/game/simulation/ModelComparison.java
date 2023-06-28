@@ -1,11 +1,12 @@
 package kz.ninestones.game.simulation;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Arrays;
+import com.google.common.collect.ImmutableList;
+
 import java.util.List;
-import java.util.stream.Collectors;
+
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.RecordedGame;
+import kz.ninestones.game.modeling.strategy.Strategies;
 import kz.ninestones.game.modeling.strategy.Strategy;
 
 public class ModelComparison {
@@ -13,15 +14,10 @@ public class ModelComparison {
   private static final int ITERATIONS = 1000;
 
   public static void main(String[] args) {
-    List<Strategy> strategies = Arrays.stream(KnownStrategy.values())
-        .map(KnownStrategy::getStrategy).collect(Collectors.toList());
+    List<Strategy> strategies = ImmutableList.of(Strategies.RANDOM, Strategies.FIRST_ALLOWED_MOVE, Strategies.MIN_MAX_SCORE_DIFF);
     int n = strategies.size();
 
     double[][] comparisons = new double[n][n];
-
-    for (KnownStrategy knownStrategy : KnownStrategy.values()) {
-      System.out.println(knownStrategy.ordinal() + " -> " + knownStrategy.name());
-    }
 
     for (int i = 0; i < n; i++) {
       System.out.println();
@@ -37,8 +33,7 @@ public class ModelComparison {
 
   public static double compare(Strategy playerOneStrategy, Strategy playerTwoStrategy) {
 
-    GameSimulator simulator = new GameSimulator(
-        ImmutableMap.of(Player.ONE, playerOneStrategy, Player.TWO, playerTwoStrategy));
+    GameSimulator simulator = new GameSimulator(playerOneStrategy, playerTwoStrategy);
 
     int playerOneWon = 0;
 //    int playerTwoWon = 0;
@@ -47,7 +42,7 @@ public class ModelComparison {
 //    BloomFilter<State> bloomFilter = BloomFilter.create(StateFunnel.INSTANCE, 20000000, 0.0001);
 
     for (int i = 0; i < ITERATIONS; i++) {
-      RecordedGame recordedGame = simulator.simulate();
+      RecordedGame recordedGame = simulator.recordedPlayOut();
 
       if (Player.ONE.equals(recordedGame.getWinner())) {
         playerOneWon++;

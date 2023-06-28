@@ -7,22 +7,6 @@ import java.util.stream.IntStream;
 
 public class Policy {
 
-  private static int nextCell(int cell) {
-    if (cell == 0) {
-      return 9;
-    }
-
-    if (cell < 9) {
-      return cell - 1;
-    }
-
-    if (cell == 17) {
-      return 8;
-    }
-
-    return cell + 1;
-  }
-
   public static boolean isAllowedMove(State state, int move) {
     checkArgument(move > 0 && move < 10, "Move should be in [1,9]");
 
@@ -59,7 +43,7 @@ public class Policy {
 
     // Draw
     if (state.score.get(Player.ONE) == 81 && state.score.get(Player.TWO) == 81) {
-      return Optional.empty();
+      return Optional.of(Player.NONE);
     }
 
     boolean hasNoMoves = IntStream.rangeClosed(1, 9).noneMatch(move -> isAllowedMove(state, move));
@@ -69,18 +53,6 @@ public class Policy {
     }
 
     return Optional.empty();
-  }
-
-  // Returns Player relevant move by cell index;
-  private static int moveByCell(int cell) {
-    // 8 -> 1
-    // 0 -> 9
-    if (cell < 9) {
-      return 9 - cell;
-    }
-    // 9 -> 1
-    // 17 -> 1;
-    return cell - 8;
   }
 
   public static State makeMove(final State state, int move) {
@@ -123,14 +95,18 @@ public class Policy {
         if (newState.cells[currentCell] == 3) {
           int possibleSpecialCellMove = moveByCell(currentCell);
 
-          Optional<Integer> opponentSpecialCellMove = Optional.ofNullable(
-              state.specialCells.get(player.opponent)).map(Policy::moveByCell);
+          Optional<Integer> opponentSpecialCellMove =
+              Optional.ofNullable(state.specialCells.get(player.opponent)).map(Policy::moveByCell);
 
           boolean eligibleForSpecial =
-              !newState.specialCells.containsKey(player) && // Does not have special cell yet;
-                  possibleSpecialCellMove != 9 && // 9th (most right cell) can not be special;
-                  (!opponentSpecialCellMove.isPresent() || !opponentSpecialCellMove.get()
-                      .equals(possibleSpecialCellMove)); // Can not mirror opponent's special;
+              !newState.specialCells.containsKey(player)
+                  && // Does not have special cell yet;
+                  possibleSpecialCellMove != 9
+                  && // 9th (most right cell) can not be special;
+                  (!opponentSpecialCellMove.isPresent()
+                      || !opponentSpecialCellMove
+                          .get()
+                          .equals(possibleSpecialCellMove)); // Can not mirror opponent's special;
 
           if (eligibleForSpecial) {
             newState.score.merge(player, 3, Integer::sum);
@@ -154,6 +130,34 @@ public class Policy {
       return cell > 8;
     }
     return cell < 9;
+  }
+
+  // Returns Player relevant move by cell index;
+  private static int moveByCell(int cell) {
+    // 8 -> 1
+    // 0 -> 9
+    if (cell < 9) {
+      return 9 - cell;
+    }
+    // 9 -> 1
+    // 17 -> 1;
+    return cell - 8;
+  }
+
+  private static int nextCell(int cell) {
+    if (cell == 0) {
+      return 9;
+    }
+
+    if (cell < 9) {
+      return cell - 1;
+    }
+
+    if (cell == 17) {
+      return 8;
+    }
+
+    return cell + 1;
   }
 
 }

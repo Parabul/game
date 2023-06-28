@@ -1,6 +1,5 @@
 package kz.ninestones.game.learning;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,14 +19,13 @@ import org.nd4j.linalg.factory.Nd4j;
 
 public class TrainingSetGenerator {
 
-  private final GameSimulator gameSimulator;
+  private final GameSimulator singleGameSimulator;
 
   public TrainingSetGenerator() {
     StateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();
     MatrixMinMaxStrategy model = new MatrixMinMaxStrategy(stateEvaluator);
 
-    this.gameSimulator = new GameSimulator(
-        ImmutableMap.of(Player.ONE, model, Player.TWO, model));
+    this.singleGameSimulator = new GameSimulator(model, model);
   }
 
   public DataSetIterator generateTrainingData(int samples, int batchSize) {
@@ -35,7 +33,7 @@ public class TrainingSetGenerator {
     List<INDArray> outputs = new ArrayList<>(samples);
 
     for (int i = 0; i < samples; i++) {
-      RecordedGame record = gameSimulator.simulate();
+      RecordedGame record = singleGameSimulator.recordedPlayOut();
       int steps = record.getSteps().size();
 
       double outcome = Player.ONE.equals(record.getWinner()) ? 1.0 : 0.0;

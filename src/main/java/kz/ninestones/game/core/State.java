@@ -47,19 +47,26 @@ public class State implements Serializable {
   }
 
   // Sparse init
-  public State(Map<Integer, Integer> nonZeroValues, Map<Player, Integer> score,
-      Map<Player, Integer> specialCells, Player nextMove) {
-    checkArgument(nonZeroValues.keySet().stream().allMatch(key -> key >= 0 && key < 18),
+  public State(
+      Map<Integer, Integer> nonZeroValues,
+      Map<Player, Integer> score,
+      Map<Player, Integer> specialCells,
+      Player nextMove) {
+    checkArgument(
+        nonZeroValues.keySet().stream().allMatch(key -> key >= 0 && key < 18),
         "Value key out of range");
 
     if (specialCells.containsValue(Player.ONE)) {
-      checkArgument((specialCells.get(Player.ONE) > 8 && specialCells.get(Player.ONE) < 17),
+      checkArgument(
+          (specialCells.get(Player.ONE) > 8 && specialCells.get(Player.ONE) < 17),
           "Special one out of range");
     }
 
     if (specialCells.containsValue(Player.TWO)) {
-      checkArgument(specialCells.containsValue(Player.TWO) && (specialCells.get(Player.TWO) > 0
-          && specialCells.get(Player.TWO) < 9), "Special two out of range");
+      checkArgument(
+          specialCells.containsValue(Player.TWO)
+              && (specialCells.get(Player.TWO) > 0 && specialCells.get(Player.TWO) < 9),
+          "Special two out of range");
     }
 
     this.cells = new int[18];
@@ -108,7 +115,7 @@ public class State implements Serializable {
     sb.append("|");
     for (int i = 0; i < 9; i++) {
       sb.append(
-          Strings.padStart(isSpecial(i).isPresent() ? cells[i] + "*" : cells[i] + "", 4, ' '));
+          Strings.padStart(isSpecial(i).isPresent() ? cells[i] + "*" : String.valueOf(cells[i]), 4, ' '));
       sb.append("|");
     }
     sb.append("\n");
@@ -116,7 +123,7 @@ public class State implements Serializable {
     sb.append("|");
     for (int i = 9; i < 18; i++) {
       sb.append(
-          Strings.padStart(isSpecial(i).isPresent() ? cells[i] + "*" : cells[i] + "", 4, ' '));
+          Strings.padStart(isSpecial(i).isPresent() ? cells[i] + "*" : String.valueOf(cells[i]), 4, ' '));
       sb.append("|");
     }
     sb.append("\n");
@@ -139,8 +146,10 @@ public class State implements Serializable {
       return false;
     }
     State state = (State) o;
-    return Objects.equal(cells, state.cells) && Objects.equal(score, state.score) && Objects.equal(
-        specialCells, state.specialCells) && nextMove == state.nextMove;
+    return Arrays.equals(cells, state.cells)
+        && Objects.equal(score, state.score)
+        && Objects.equal(specialCells, state.specialCells)
+        && nextMove == state.nextMove;
   }
 
   @Override
@@ -166,5 +175,4 @@ public class State implements Serializable {
       into.putString(from.nextMove.name(), StandardCharsets.UTF_8);
     }
   }
-
 }

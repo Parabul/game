@@ -1,17 +1,17 @@
 package kz.ninestones.game.simulation;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.BloomFilter;
 import java.io.IOException;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.core.State.StateFunnel;
+import kz.ninestones.game.modeling.strategy.Strategies;
 
 public class LoadRunner {
-public static void main(String[] args) throws IOException {
-//    run(1);
+  public static void main(String[] args) throws IOException {
+    //    run(1);
     run(10);
     run(100);
     //  run(1000);
@@ -22,25 +22,24 @@ public static void main(String[] args) throws IOException {
     System.out.println("-----");
     System.out.println(times);
 
-//    StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
-//    StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
-//        "/home/anarbek/projects/ninestones/models/3.3.model");
-//    StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
-//        "/home/anarbek/projects/ninestones/models/3.1.model");
-//
-//    StateEvaluator secondModel = new NeuralNetStateEvaluator(
-//        "/home/anarbek/projects/ninestones/models/second.model");
-//
-//    Strategy minMaxScore = new MatrixMinMaxStrategy(diffStateEvaluator);
-//
-//    Strategy minMaxFirstNet = new MatrixMinMaxStrategy(new NeuralNetStateEvaluator(
-//        "/home/anarbek/projects/ninestones/models/3.3.model"));
-//    Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
-//    Strategy minMaxFirstModelNet = new MatrixMinMaxStrategy(secondModel);
+    //    StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
+    //    StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
+    //        "/home/anarbek/projects/ninestones/models/3.3.model");
+    //    StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
+    //        "/home/anarbek/projects/ninestones/models/3.1.model");
+    //
+    //    StateEvaluator secondModel = new NeuralNetStateEvaluator(
+    //        "/home/anarbek/projects/ninestones/models/second.model");
+    //
+    //    Strategy minMaxScore = new MatrixMinMaxStrategy(diffStateEvaluator);
+    //
+    //    Strategy minMaxFirstNet = new MatrixMinMaxStrategy(new NeuralNetStateEvaluator(
+    //        "/home/anarbek/projects/ninestones/models/3.3.model"));
+    //    Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
+    //    Strategy minMaxFirstModelNet = new MatrixMinMaxStrategy(secondModel);
 
-    GameSimulator simulator = new GameSimulator(
-        ImmutableMap.of(Player.ONE, KnownStrategy.MIN_MAX_SCORE_DIFF.getStrategy(), Player.TWO,
-            KnownStrategy.NEURAL_NET_1.getStrategy()));
+    GameSimulator simulator =
+        new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.MONTE_CARLO);
 
     int playerOneWon = 0;
     int playerTwoWon = 0;
@@ -53,7 +52,7 @@ public static void main(String[] args) throws IOException {
     Stopwatch watch = Stopwatch.createStarted();
 
     for (int i = 0; i < times; i++) {
-      RecordedGame recordedGame = simulator.simulate();
+      RecordedGame recordedGame = simulator.recordedPlayOut();
 
       if (Player.ONE.equals(recordedGame.getWinner())) {
         playerOneWon++;
@@ -71,8 +70,9 @@ public static void main(String[] args) throws IOException {
     System.out.println("Score " + playerOneWon + " : " + playerTwoWon);
     System.out.println("Draws " + (times - playerOneWon - playerTwoWon));
 
-    System.out.println("Approximate unique states per game: "
-        + 1.0 * bloomFilter.approximateElementCount() / times);
+    System.out.println(
+        "Approximate unique states per game: "
+            + 1.0 * bloomFilter.approximateElementCount() / times);
     System.out.println("Average # of steps per game: " + 1.0 * totalSteps / times);
   }
 }
@@ -122,7 +122,7 @@ public static void main(String[] args) throws IOException {
 //    avgSteps: 124.67691
 
 // NN vs ScoreDiff MiniMax
-//Stopwatch: 3.323 s
+// Stopwatch: 3.323 s
 //    Score 0 : 1
 //    approxStates: 130
 //    avgSteps: 130.0

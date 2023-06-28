@@ -115,23 +115,13 @@
             <version>${dl4j-master.version}</version>
         </dependency>
 
-        <!-- ParallelWrapper & ParallelInference live here -->
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
         <dependency>
-            <artifactId>deeplearning4j-parallel-wrapper</artifactId>
-            <groupId>org.deeplearning4j</groupId>
-            <version>${dl4j-master.version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.6.1</version>
         </dependency>
-        <!-- Used in the feedforward/classification/MLP* and feedforward/regression/RegressionMathFunctions example -->
-        <dependency>
-            <artifactId>jfreechart</artifactId>
-            <groupId>jfree</groupId>
-            <version>${jfreechart.version}</version>
-        </dependency>
-        <dependency>
-            <artifactId>jcommon</artifactId>
-            <groupId>org.jfree</groupId>
-            <version>${jcommon.version}</version>
-        </dependency>
+
 
     </dependencies>
     <groupId>kz.ninestones</groupId>

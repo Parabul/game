@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import kz.ninestones.game.core.Player;
-import kz.ninestones.game.learning.encode.GameEncoder;
+import kz.ninestones.game.learning.encode.DirectStateEncoder;
+import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
+import kz.ninestones.game.learning.encode.StateEncoder;
 import kz.ninestones.game.modeling.strategy.MonteCarloTreeNode;
 import kz.ninestones.game.modeling.strategy.MonteCarloTreeSearch;
 import org.deeplearning4j.datasets.iterator.utilty.ListDataSetIterator;
@@ -15,6 +17,8 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class MonteCarloTreeSearchTrainingSetGenerator {
+
+  private final StateEncoder stateEncoder = new DirectStateEncoder();
 
   public DataSetIterator generateTrainingData(int samples, int batchSize) {
     DataSet dataSet = generateDataSet(samples);
@@ -48,7 +52,7 @@ public class MonteCarloTreeSearchTrainingSetGenerator {
 
       INDArray output = Nd4j.create(wins, 1, 3);
 
-      INDArray input = GameEncoder.toINDArray(node.getState());
+      INDArray input = stateEncoder.toINDArray(node.getState());
 
       inputs.add(input);
       outputs.add(output);

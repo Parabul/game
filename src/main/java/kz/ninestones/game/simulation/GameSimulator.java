@@ -3,10 +3,12 @@ package kz.ninestones.game.simulation;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.util.EnumMap;
+import java.util.concurrent.ThreadLocalRandom;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.core.State;
+import kz.ninestones.game.modeling.strategy.RandomMoveStrategy;
 import kz.ninestones.game.modeling.strategy.Strategy;
 
 public class GameSimulator {
@@ -14,13 +16,24 @@ public class GameSimulator {
   private final EnumMap<Player, Strategy> models;
 
   public GameSimulator(Strategy playerOneStrategy, Strategy playerTwoStrategy) {
-    this(playerOneStrategy, playerTwoStrategy, new State());
-  }
-
-  public GameSimulator(Strategy playerOneStrategy, Strategy playerTwoStrategy, State initialState) {
     this.models =
         new EnumMap<>(
             ImmutableMap.of(Player.ONE, playerOneStrategy, Player.TWO, playerTwoStrategy));
+  }
+
+  public static State randomState() {
+
+    State state = new State();
+
+    int steps = ThreadLocalRandom.current().nextInt(10);
+
+    RandomMoveStrategy moveStrategy = new RandomMoveStrategy();
+
+    for(int i =0;i < steps; i++){
+      int move = moveStrategy.suggestNextMove(state);
+      state = Policy.makeMove(state, move);
+    }
+    return state;
   }
 
   public RecordedGame recordedPlayOut() {

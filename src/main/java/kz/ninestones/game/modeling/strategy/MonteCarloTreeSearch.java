@@ -14,15 +14,15 @@ public class MonteCarloTreeSearch {
 
   private final MonteCarloTreeNode root = MonteCarloTreeNode.ROOT.get();
 
-  private final GameSimulator gameSimulator =
-      new GameSimulator(Strategies.RANDOM, Strategies.RANDOM);
+  private final GameSimulator gameSimulator;
 
   public MonteCarloTreeSearch() {
-    this(NUM_SIMULATIONS);
+    this(NUM_SIMULATIONS, new GameSimulator(Strategies.RANDOM, Strategies.RANDOM));
   }
 
-  public MonteCarloTreeSearch(long numSimulations) {
+  public MonteCarloTreeSearch(long numSimulations, GameSimulator gameSimulator) {
     this.numSimulations = numSimulations;
+    this.gameSimulator = gameSimulator;
   }
 
   public void expand() {

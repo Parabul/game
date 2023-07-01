@@ -26,7 +26,7 @@ public class MonteCarloBasedModel {
   // Random number generator seed, for reproduceability
   public static final int seed = 12345;
   // Number of epochs (full passes of the data)
-  public static final int nEpochs = 20;
+  public static final int nEpochs = 30;
   // Batch size: i.e., each epoch has nSamples/batchSize parameter updates
   public static final int batchSize = 1000;
   // Network learning rate
@@ -40,7 +40,7 @@ public class MonteCarloBasedModel {
     System.out.println("Start: " + watch);
 
     // Create the network
-    int numInput = 36;
+    int numInput = 23;
     int numOutputs = 3;
     int nHidden = 108;
 
@@ -112,6 +112,6 @@ public class MonteCarloBasedModel {
     regressionEvaluation.eval(testSet.getLabels(), output);
     System.out.println(regressionEvaluation.stats());
 
-    net.save(new File("/home/anarbek/projects/ninestones/models/monte_carlo_01.model"));
+    net.save(new File("/home/anarbek/projects/ninestones/models/monte_carlo_03.model"));
   }
 }

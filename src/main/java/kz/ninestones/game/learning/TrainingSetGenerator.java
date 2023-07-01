@@ -6,7 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.RecordedGame;
-import kz.ninestones.game.learning.encode.GameEncoder;
+import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
+import kz.ninestones.game.learning.encode.StateEncoder;
 import kz.ninestones.game.modeling.evaluation.ScoreDiffStateEvaluator;
 import kz.ninestones.game.modeling.evaluation.StateEvaluator;
 import kz.ninestones.game.modeling.strategy.MatrixMinMaxStrategy;
@@ -18,6 +19,9 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.factory.Nd4j;
 
 public class TrainingSetGenerator {
+
+  private final StateEncoder stateEncoder = new NormalizedStateEncoder();
+
 
   private final GameSimulator singleGameSimulator;
 
@@ -40,7 +44,7 @@ public class TrainingSetGenerator {
 
       INDArray output = Nd4j.valueArrayOf(steps, 1, outcome);
 
-      INDArray input = GameEncoder.toINDArray(record.getSteps());
+      INDArray input = stateEncoder.toINDArray(record.getSteps());
 
       inputs.add(input);
       outputs.add(output);

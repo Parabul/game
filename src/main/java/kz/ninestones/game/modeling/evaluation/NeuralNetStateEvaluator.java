@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
-import kz.ninestones.game.learning.encode.GameEncoder;
+import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
+import kz.ninestones.game.learning.encode.StateEncoder;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 
 public class NeuralNetStateEvaluator implements StateEvaluator {
 
   private final MultiLayerNetwork model;
+
+  private final StateEncoder stateEncoder = new NormalizedStateEncoder();
 
   public NeuralNetStateEvaluator() throws IOException {
     this("/home/anarbek/projects/ninestones/models/first.model");
@@ -21,12 +24,12 @@ public class NeuralNetStateEvaluator implements StateEvaluator {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    System.out.println("modelPath: "+ modelPath);
+    System.out.println("modelPath: " + modelPath);
   }
 
   @Override
   public double evaluate(State state, Player player) {
-    double score = model.output(GameEncoder.toINDArray(state), false).getDouble(0, 0);
+    double score = model.output(stateEncoder.toINDArray(state), false).getDouble(0, 0);
 
     return player.equals(Player.ONE) ? score : 1 - score;
   }

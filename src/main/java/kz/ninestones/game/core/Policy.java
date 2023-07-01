@@ -133,7 +133,7 @@ public class Policy {
   }
 
   // Returns Player relevant move by cell index;
-  private static int moveByCell(int cell) {
+  public static int moveByCell(int cell) {
     // 8 -> 1
     // 0 -> 9
     if (cell < 9) {

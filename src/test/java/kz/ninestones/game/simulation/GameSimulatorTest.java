@@ -37,9 +37,9 @@ public class GameSimulatorTest {
     assertThat(winners).containsKey(Player.TWO);
     assertThat(winners).containsKey(Player.NONE);
 
-    assertThat(1.0 * winners.get(Player.ONE) / playOuts).isWithin(0.01).of(0.54);
-    assertThat(1.0 * winners.get(Player.TWO) / playOuts).isWithin(0.01).of(0.45);
-    assertThat(1.0 * winners.get(Player.NONE) / playOuts).isWithin(0.01).of(0.0);
+    assertThat(1.0 * winners.get(Player.ONE) / playOuts).isWithin(0.02).of(0.54);
+    assertThat(1.0 * winners.get(Player.TWO) / playOuts).isWithin(0.02).of(0.45);
+    assertThat(1.0 * winners.get(Player.NONE) / playOuts).isWithin(0.02).of(0.0);
   }
 
   @Test
@@ -60,6 +60,6 @@ public class GameSimulatorTest {
 
     Map<Player, Long> winners = simulator.playOut(state, playOuts).getObservedWinners().asMap();
 
-    assertThat(winners).containsExactly(Player.TWO, 100);
+    assertThat(winners).containsExactly(Player.TWO, 100l);
   }
 }

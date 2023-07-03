@@ -16,10 +16,10 @@ public class LocalMonteCarloPlayOutSimulator implements MonteCarloPlayOutSimulat
   }
 
   @Override
-  public void playOut(MonteCarloTreeNode currentNode, long numSimulations) {
+  public void playOut(MonteCarloTreeNode currentNode) {
     for (MonteCarloTreeNode childNode : currentNode.getChildren()) {
       SimulationResult simulationResult =
-          gameSimulator.playOut(childNode.getState(), numSimulations);
+          gameSimulator.playOut(childNode.getState(), getNumsimulations());
       childNode.update(simulationResult);
       childNode.backPropagate(simulationResult);
     }

@@ -22,7 +22,7 @@ public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutS
         new MultiAddressNameResolverFactory(
             new InetSocketAddress("192.168.0.80", 8999),
             new InetSocketAddress("192.168.0.62", 8999),
-            new InetSocketAddress("localhost", 8999));
+            new InetSocketAddress("192.168.0.101", 8999));
 
     ManagedChannel channel =
         ManagedChannelBuilder.forTarget("service")
@@ -41,7 +41,7 @@ public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutS
   }
 
   @Override
-  public void playOut(MonteCarloTreeNode currentNode, long numSimulations) {
+  public void playOut(MonteCarloTreeNode currentNode) {
 
     List<ListenableFuture<Game.GameSimulatorResponse>> replies = new ArrayList<>();
 
@@ -55,7 +55,7 @@ public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutS
           simulatorServiceFutureStub.playOut(
               Game.GameSimulatorRequest.newBuilder()
                   .setLabel(childNode.getMove())
-                  .setNumSimulations(Long.valueOf(numSimulations).intValue())
+                  .setNumSimulations(Long.valueOf(getNumsimulations()).intValue())
                   .setInitialState(childNode.getState().toProto())
                   .build()));
     }

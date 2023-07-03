@@ -6,7 +6,6 @@ import java.util.List;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.simulation.DistributedMonteCarloPlayOutSimulator;
-import kz.ninestones.game.simulation.GameSimulator;
 import org.junit.Test;
 
 public class MonteCarloTreeSearchTest {
@@ -60,7 +59,7 @@ public class MonteCarloTreeSearchTest {
   @Test
   public void expandsWithCustomConstructor() {
     MonteCarloTreeSearch monteCarloTreeSearch =
-        new MonteCarloTreeSearch(10, new DistributedMonteCarloPlayOutSimulator());
+        new MonteCarloTreeSearch(new DistributedMonteCarloPlayOutSimulator());
 
     monteCarloTreeSearch.expand();
 
@@ -79,5 +78,4 @@ public class MonteCarloTreeSearchTest {
     System.out.println(monteCarloTreeSearch.getRoot().getObservedWinners());
     System.out.println("traversal size: " + traversal.size());
   }
-
 }

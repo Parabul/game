@@ -2,10 +2,8 @@ package kz.ninestones.game.simulation;
 
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.google.mu.util.stream.BiStream;
-import kz.ninestones.game.core.Player;
-
 import java.util.Map;
-import java.util.stream.Collectors;
+import kz.ninestones.game.core.Player;
 
 public class SimulationResult {
 

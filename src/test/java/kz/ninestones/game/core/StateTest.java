@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import kz.ninestones.game.proto.Game;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 
 public class StateTest {
 

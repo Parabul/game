@@ -7,7 +7,6 @@ import java.io.IOException;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.modeling.evaluation.MonteCartoStateEvaluator;
-import kz.ninestones.game.modeling.evaluation.NeuralNetStateEvaluator;
 import kz.ninestones.game.modeling.evaluation.StateEvaluator;
 import org.junit.Test;
 

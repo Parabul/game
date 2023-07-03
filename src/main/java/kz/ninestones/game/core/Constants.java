@@ -1,6 +1,5 @@
 package kz.ninestones.game.core;
 
-import java.util.Random;
 
 public class Constants {
 

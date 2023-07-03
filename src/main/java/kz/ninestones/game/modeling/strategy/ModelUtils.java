@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-
 import kz.ninestones.game.core.Constants;
 import kz.ninestones.game.modeling.DistributionSampling;
 

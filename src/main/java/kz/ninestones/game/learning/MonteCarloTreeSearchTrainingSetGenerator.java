@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.learning.encode.DirectStateEncoder;
-import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
 import kz.ninestones.game.learning.encode.StateEncoder;
 import kz.ninestones.game.modeling.strategy.MonteCarloTreeNode;
 import kz.ninestones.game.modeling.strategy.MonteCarloTreeSearch;

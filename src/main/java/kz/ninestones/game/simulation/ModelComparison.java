@@ -1,9 +1,7 @@
 package kz.ninestones.game.simulation;
 
 import com.google.common.collect.ImmutableList;
-
 import java.util.List;
-
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.modeling.strategy.Strategies;

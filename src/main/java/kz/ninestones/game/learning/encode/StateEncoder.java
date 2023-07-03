@@ -1,14 +1,18 @@
 package kz.ninestones.game.learning.encode;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.List;
 import java.util.stream.IntStream;
-
-import com.google.common.annotations.VisibleForTesting;
 import kz.ninestones.game.core.State;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 
 public interface StateEncoder {
+
+  @VisibleForTesting
+  static double[] oneHot(int index) {
+    return IntStream.range(0, 8).mapToDouble(i -> i == index ? 1.0 : 0.0).toArray();
+  }
 
   default INDArray toINDArray(List<State> states) {
     return Nd4j.create(encode(states));
@@ -34,9 +38,4 @@ public interface StateEncoder {
   double[] encodeSpecialCells(State state);
 
   int numFeatures();
-
-  @VisibleForTesting
-  static double[] oneHot(int index) {
-    return IntStream.range(0, 8).mapToDouble(i -> i == index ? 1.0 : 0.0).toArray();
-  }
 }

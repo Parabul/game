@@ -1,0 +1,35 @@
+syntax = "proto3"; /* default is proto2 */
+
+/* *
+ * If no explicit java_package option is given in the .proto file, then by default the proto package
+ * (specified using the “package” keyword) will be used
+ * */
+option java_package = "kz.ninestones.game.proto";
+
+service GameSimulatorService {
+  rpc PlayOut (GameSimulatorRequest) returns (GameSimulatorResponse) {}
+}
+
+enum PlayerProto {
+  NONE = 0;
+  ONE = 1;
+  TWO = 2;
+}
+
+message StateProto {
+  repeated int32 cells = 1;
+  map<string, int32> score = 2;
+  map<string, int32> special_cells = 3;
+  PlayerProto nextMove = 4;
+}
+
+message GameSimulatorRequest {
+  int32 label = 3;
+  int32 num_simulations = 1;
+  StateProto initial_state = 2;
+}
+
+message GameSimulatorResponse {
+  int32 label = 3;
+  map<string, int64> observed_winners = 1;
+}

@@ -8,12 +8,14 @@ import com.google.common.hash.Funnel;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.PrimitiveSink;
+import com.google.mu.util.stream.BiStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
+import kz.ninestones.game.proto.Game;
 
 public class State implements Serializable {
 
@@ -86,6 +88,44 @@ public class State implements Serializable {
     this.nextMove = nextMove;
   }
 
+  public State(Game.StateProto state) {
+    checkArgument(
+        state.getCellsCount() == 18, "Cells should have length 18, but %s", state.getCellsCount());
+    cells = state.getCellsList().stream().mapToInt(Integer::intValue).toArray();
+
+    checkArgument(
+        state.getScoreCount() == 2, "Scores should have length 2, but %s", state.getScoreCount());
+    score =
+        new EnumMap(
+            BiStream.from(state.getScoreMap()).mapKeys(player -> Player.valueOf(player)).toMap());
+
+    if (state.getSpecialCellsCount() > 0) {
+      specialCells =
+          new EnumMap(
+              BiStream.from(state.getSpecialCellsMap())
+                  .mapKeys(player -> Player.valueOf(player))
+                  .toMap());
+    } else {
+      specialCells = new EnumMap(Player.class);
+    }
+
+    checkArgument(!state.getNextMove().equals(Game.PlayerProto.NONE), "Player is not set");
+    nextMove = Player.valueOf(state.getNextMove().name());
+  }
+
+  public Game.StateProto toProto() {
+    Game.StateProto.Builder builder = Game.StateProto.newBuilder();
+
+    Arrays.stream(this.cells).forEachOrdered(builder::addCells);
+
+    this.score.forEach((player, score) -> builder.putScore(player.name(), score));
+    this.specialCells.forEach((player, score) -> builder.putSpecialCells(player.name(), score));
+
+    builder.setNextMove(Game.PlayerProto.valueOf(this.nextMove.name()));
+
+    return builder.build();
+  }
+
   Optional<Player> isSpecial(int cell) {
     if (!specialCells.containsValue(cell)) {
       return Optional.empty();
@@ -115,7 +155,8 @@ public class State implements Serializable {
     sb.append("|");
     for (int i = 0; i < 9; i++) {
       sb.append(
-          Strings.padStart(isSpecial(i).isPresent() ? cells[i] + "*" : String.valueOf(cells[i]), 4, ' '));
+          Strings.padStart(
+              isSpecial(i).isPresent() ? cells[i] + "*" : String.valueOf(cells[i]), 4, ' '));
       sb.append("|");
     }
     sb.append("\n");
@@ -123,7 +164,8 @@ public class State implements Serializable {
     sb.append("|");
     for (int i = 9; i < 18; i++) {
       sb.append(
-          Strings.padStart(isSpecial(i).isPresent() ? cells[i] + "*" : String.valueOf(cells[i]), 4, ' '));
+          Strings.padStart(
+              isSpecial(i).isPresent() ? cells[i] + "*" : String.valueOf(cells[i]), 4, ' '));
       sb.append("|");
     }
     sb.append("\n");

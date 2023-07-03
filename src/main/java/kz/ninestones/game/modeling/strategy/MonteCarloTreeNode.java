@@ -51,7 +51,7 @@ public class MonteCarloTreeNode {
   }
 
   @VisibleForTesting
-  void update(SimulationResult simulationResult) {
+  public void update(SimulationResult simulationResult) {
     simulationResult
         .getObservedWinners()
         .asMap()
@@ -60,7 +60,7 @@ public class MonteCarloTreeNode {
   }
 
   @VisibleForTesting
-  void backPropagate(SimulationResult simulationResult) {
+  public void backPropagate(SimulationResult simulationResult) {
     MonteCarloTreeNode current = this;
     while (current.parent != null) {
       current.parent.update(simulationResult);

@@ -3,6 +3,8 @@ package kz.ninestones.game.learning;
 import com.google.common.base.Stopwatch;
 import java.io.File;
 import java.io.IOException;
+import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
+import kz.ninestones.game.learning.training.MonteCarloTreeSearchTrainingSetReader;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
@@ -17,10 +19,6 @@ import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-/**
- * Created by Anwar on 3/15/2016. An example of regression neural network for performing addition
- */
-// @SuppressWarnings({"DuplicatedCode", "FieldCanBeLocal"})
 public class MonteCarloBasedModel {
 
   // Random number generator seed, for reproduceability
@@ -31,16 +29,19 @@ public class MonteCarloBasedModel {
   public static final int batchSize = 1000;
   // Network learning rate
   public static final double learningRate = 0.001;
-
+  public static final String TRAINING_DAT =
+      "/home/anarbek/projects/ninestones/data/minimax/small_training.dat";
+  public static final String TEST_DAT =
+      "/home/anarbek/projects/ninestones/data/minimax/small_test.dat";
   // Number of data points
-  private static final int nSamples = 500;
+  private static final int nSamples = 50;
 
   public static void main(String[] args) throws IOException {
     Stopwatch watch = Stopwatch.createStarted();
     System.out.println("Start: " + watch);
 
     // Create the network
-    int numInput = 23;
+    int numInput = 39;
     int numOutputs = 3;
     int nHidden = 108;
 
@@ -74,6 +75,16 @@ public class MonteCarloBasedModel {
                         .build())
                 .layer(
                     2,
+                    new DenseLayer.Builder()
+                        .nIn(nHidden)
+                        .nOut(nHidden)
+                        .activation(
+                            Activation
+                                .RELU) // Change this to RELU and you will see the net learns very
+                        // well very quickly
+                        .build())
+                .layer(
+                    3,
                     new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
                         .activation(Activation.SIGMOID)
                         .nIn(nHidden)
@@ -85,8 +96,14 @@ public class MonteCarloBasedModel {
 
     System.out.println("Init: " + watch);
 
+    MonteCarloTreeSearchTrainingSetReader trainingSetReader =
+        new MonteCarloTreeSearchTrainingSetReader(new NormalizedStateEncoder());
+
     DataSetIterator iterator =
-        (new MonteCarloTreeSearchTrainingSetGenerator()).generateTrainingData(nSamples, batchSize);
+        MonteCarloTreeSearchTrainingSetReader.iterator(
+            trainingSetReader.read(TRAINING_DAT), batchSize);
+
+    System.out.println("TrainingSet Read Done: " + watch);
 
     // Train the network on the full data set, and evaluate in periodically
     for (int i = 0; i < nEpochs; i++) {
@@ -101,7 +118,7 @@ public class MonteCarloBasedModel {
     System.out.println();
     System.out.println("Stopwatch: " + watch);
 
-    DataSet testSet = (new MonteCarloTreeSearchTrainingSetGenerator()).generateDataSet(10);
+    DataSet testSet = trainingSetReader.read(TEST_DAT);
 
     Evaluation eval = new Evaluation(3);
     INDArray output = net.output(testSet.getFeatures());
@@ -112,6 +129,6 @@ public class MonteCarloBasedModel {
     regressionEvaluation.eval(testSet.getLabels(), output);
     System.out.println(regressionEvaluation.stats());
 
-    net.save(new File("/home/anarbek/projects/ninestones/models/monte_carlo_03.model"));
+    net.save(new File("/home/anarbek/projects/ninestones/models/monte_carlo_02.model"));
   }
 }

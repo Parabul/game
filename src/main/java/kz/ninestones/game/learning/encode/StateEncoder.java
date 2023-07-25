@@ -11,7 +11,7 @@ public interface StateEncoder {
 
   @VisibleForTesting
   static double[] oneHot(int index) {
-    return IntStream.range(0, 8).mapToDouble(i -> i == index ? 1.0 : 0.0).toArray();
+    return IntStream.range(0, 9).mapToDouble(i -> i == index ? 1.0 : 0.0).toArray();
   }
 
   default INDArray toINDArray(List<State> states) {

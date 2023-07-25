@@ -3,24 +3,19 @@ package kz.ninestones.game.rpc.service;
 import com.google.mu.util.stream.BiStream;
 import io.grpc.stub.StreamObserver;
 import kz.ninestones.game.core.Player;
+import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.modeling.strategy.Strategies;
 import kz.ninestones.game.proto.Game;
-import kz.ninestones.game.proto.GameSimulatorServiceGrpc;
+import kz.ninestones.game.proto.GameSimulatorGrpc;
 import kz.ninestones.game.simulation.GameSimulator;
 import kz.ninestones.game.simulation.SimulationResult;
 
-public class GameSimulatorServiceGrpcImpl
-    extends GameSimulatorServiceGrpc.GameSimulatorServiceImplBase {
+public class GameSimulatorServiceGrpcImpl extends GameSimulatorGrpc.GameSimulatorImplBase {
 
   private final GameSimulator gameSimulator =
       new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.MIN_MAX_SCORE_DIFF);
 
-  /*
-   * We observe here that some words have an "@", this are Annotations. Annotations are used to provide supplement
-   * information about a program. We can autogenerate this functions, in Intellij we can use the shortcut ctrl + O to
-   * do this.
-   * */
   @Override
   public void playOut(
       Game.GameSimulatorRequest request,
@@ -37,9 +32,48 @@ public class GameSimulatorServiceGrpcImpl
 
     response.setLabel(request.getLabel());
 
-    /* We can call multiple times onNext function if we have multiple replies, ex. in next commits */
     responseObserver.onNext(response.build());
-    /* We use the response observer's onCompleted method to specify that we've finished dealing with the RPC */
+    responseObserver.onCompleted();
+  }
+
+  @Override
+  public void sayHello(
+      Game.HelloRequest request, StreamObserver<Game.HelloResponse> responseObserver) {
+
+    responseObserver.onNext(
+        Game.HelloResponse.newBuilder().setMessage("Salem, " + request.getName()).build());
+    responseObserver.onCompleted();
+  }
+
+  @Override
+  public void move(
+      Game.PolicyRequest request, StreamObserver<Game.PolicyResponse> responseObserver) {
+    State state = new State();
+
+    Game.PolicyResponse.Builder response = Game.PolicyResponse.newBuilder();
+
+    for (Integer move : request.getMovesList()) {
+      state = Policy.makeMove(state, move);
+    }
+
+    response.setCurrentState(state.toProto());
+
+    if (Policy.isGameOver(state)) {
+      switch (Policy.winnerOf(state).get()) {
+        case ONE:
+          response.setGameStatus(Game.GameStatus.GAME_OVER_PLAYER_ONE_WON);
+          break;
+        case TWO:
+          response.setGameStatus(Game.GameStatus.GAME_OVER_PLAYER_TWO_WON);
+          break;
+        default:
+          response.setGameStatus(Game.GameStatus.GAME_OVER_TIE);
+      }
+    } else {
+      response.setGameStatus(Game.GameStatus.ACTIVE);
+    }
+
+    responseObserver.onNext(response.build());
     responseObserver.onCompleted();
   }
 }

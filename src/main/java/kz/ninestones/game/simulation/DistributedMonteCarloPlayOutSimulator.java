@@ -20,7 +20,6 @@ public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutS
   public DistributedMonteCarloPlayOutSimulator() {
     NameResolver.Factory nameResolverFactory =
         new MultiAddressNameResolverFactory(
-            new InetSocketAddress("192.168.0.80", 8999),
             new InetSocketAddress("192.168.0.62", 8999),
             new InetSocketAddress("192.168.0.101", 8999));
 

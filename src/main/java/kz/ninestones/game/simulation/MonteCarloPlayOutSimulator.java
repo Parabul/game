@@ -4,7 +4,7 @@ import kz.ninestones.game.modeling.strategy.MonteCarloTreeNode;
 
 public interface MonteCarloPlayOutSimulator {
 
-  long NUM_SIMULATIONS = 10;
+  long NUM_SIMULATIONS = 1;
 
   default long getNumsimulations() {
     return NUM_SIMULATIONS;

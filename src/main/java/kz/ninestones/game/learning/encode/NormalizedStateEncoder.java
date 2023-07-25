@@ -12,7 +12,7 @@ import kz.ninestones.game.core.State;
  * <p>2 X 9 X 8 (cells) + 2 X 8 (special cell) + 2 X 1 (score) + 1 (nextMove Player)
  */
 public class NormalizedStateEncoder implements StateEncoder {
-  private static final int NUM_FEATURES = 36;
+  private static final int NUM_FEATURES = 39;
 
   public double[] encodeSpecialCells(State state) {
     int playerOneSpecial = state.specialCells.getOrDefault(Player.ONE, -1);
@@ -46,6 +46,7 @@ public class NormalizedStateEncoder implements StateEncoder {
 
     double[] specialCells = encodeSpecialCells(state);
 
-    return Doubles.concat(cells, specialCells, scores);
+    double[] nextMove = new double[] {state.nextMove.ordinal()};
+    return Doubles.concat(cells, specialCells, scores, nextMove);
   }
 }

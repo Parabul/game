@@ -38,7 +38,7 @@ public class LoadRunner {
     //    Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
     //    Strategy minMaxFirstModelNet = new MatrixMinMaxStrategy(secondModel);
 
-    GameSimulator simulator = new GameSimulator(Strategies.MONTE_CARLO_2, Strategies.MONTE_CARLO);
+    GameSimulator simulator = new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.MONTE_CARLO);
 
     int playerOneWon = 0;
     int playerTwoWon = 0;

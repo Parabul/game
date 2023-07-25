@@ -9,7 +9,7 @@ import kz.ninestones.game.simulation.MonteCarloPlayOutSimulator;
 public class MonteCarloTreeSearch {
 
 
-  private final MonteCarloTreeNode root = MonteCarloTreeNode.ROOT.get();
+  private final MonteCarloTreeNode root;
 
   private final MonteCarloPlayOutSimulator playOutSimulator;
 
@@ -19,14 +19,14 @@ public class MonteCarloTreeSearch {
 
   public MonteCarloTreeSearch(MonteCarloPlayOutSimulator playOutSimulator) {
     this.playOutSimulator = playOutSimulator;
+    this.root = MonteCarloTreeNode.ROOT.get();
   }
 
   public void expand() {
 
     MonteCarloTreeNode currentNode = root;
-    int i = 0;
     while (!Policy.isGameOver(currentNode.getState())) {
-      i++;
+
       if (currentNode.getChildren().isEmpty()) {
         currentNode.initChildren();
       }

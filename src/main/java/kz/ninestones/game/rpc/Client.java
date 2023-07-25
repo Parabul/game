@@ -30,9 +30,9 @@ public class Client {
 
     NameResolver.Factory nameResolverFactory =
         new MultiAddressNameResolverFactory(
-            new InetSocketAddress("192.168.0.80", 8999),
-            new InetSocketAddress("192.168.0.62", 8999) // ,
-            //            new InetSocketAddress("localhost", 8999)
+//            new InetSocketAddress("192.168.0.80", 8999),
+//            new InetSocketAddress("192.168.0.62", 8999) // ,
+                        new InetSocketAddress("localhost", 8999)
             );
 
     ManagedChannel channel =
@@ -79,6 +79,7 @@ public class Client {
     System.out.println(stopWatch.formatTime());
 
     Futures.allAsList(replies).get().forEach(reply -> System.out.println(reply));
+
 
     System.out.println(stopWatch.formatTime());
 

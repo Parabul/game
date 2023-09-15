@@ -30,7 +30,8 @@ public class MonteCartoStateEvaluator implements StateEvaluator {
 
   @Override
   public double evaluate(State state, Player player) {
-    INDArray prediction = model.output(stateEncoder.toINDArray(state), false);
+    INDArray prediction = model.output(stateEncoder.toIND
+            Array(state), false);
     double playerOneScore = prediction.getDouble(0, 0);
     double playerTwoScore = prediction.getDouble(0, 1);
 

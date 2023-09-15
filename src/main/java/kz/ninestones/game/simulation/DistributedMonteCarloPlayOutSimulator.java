@@ -11,11 +11,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import kz.ninestones.game.modeling.strategy.MonteCarloTreeNode;
 import kz.ninestones.game.proto.Game;
-import kz.ninestones.game.proto.GameSimulatorServiceGrpc;
+import kz.ninestones.game.proto.GameSimulatorGrpc;
 
 public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutSimulator {
 
-  private final GameSimulatorServiceGrpc.GameSimulatorServiceFutureStub simulatorServiceFutureStub;
+  private final GameSimulatorGrpc.GameSimulatorFutureStub simulatorServiceFutureStub;
 
   public DistributedMonteCarloPlayOutSimulator() {
     NameResolver.Factory nameResolverFactory =
@@ -36,7 +36,7 @@ public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutS
      * Take care if you want to call a rpc function on a blocking stub from UI thread
      * (cause an unresponsive/laggy UI).
      * */
-    simulatorServiceFutureStub = GameSimulatorServiceGrpc.newFutureStub(channel);
+    simulatorServiceFutureStub = GameSimulatorGrpc.newFutureStub(channel);
   }
 
   @Override

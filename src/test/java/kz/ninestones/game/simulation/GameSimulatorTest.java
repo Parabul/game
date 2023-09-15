@@ -60,6 +60,6 @@ public class GameSimulatorTest {
 
     Map<Player, Long> winners = simulator.playOut(state, playOuts).getObservedWinners().asMap();
 
-    assertThat(winners).containsExactly(Player.TWO, 100l);
+    assertThat(winners).containsExactly(Player.TWO, 100L);
   }
 }

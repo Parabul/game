@@ -11,7 +11,7 @@ import kz.ninestones.game.proto.GameSimulatorGrpc;
 import kz.ninestones.game.simulation.GameSimulator;
 import kz.ninestones.game.simulation.SimulationResult;
 
-public class GameSimulatorServiceGrpcImpl extends GameSimulatorGrpc.GameSimulatorImplBase {
+public class GameSimulatorService extends GameSimulatorGrpc.GameSimulatorImplBase {
 
   private final GameSimulator gameSimulator =
       new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.MIN_MAX_SCORE_DIFF);
@@ -74,6 +74,22 @@ public class GameSimulatorServiceGrpcImpl extends GameSimulatorGrpc.GameSimulato
     }
 
     responseObserver.onNext(response.build());
+    responseObserver.onCompleted();
+  }
+
+  @Override
+  public void suggest(
+      Game.SuggestionRequest request, StreamObserver<Game.SuggestionResponse> responseObserver) {
+    State state = new State();
+
+    for (Integer move : request.getMovesList()) {
+      state = Policy.makeMove(state, move);
+    }
+
+    responseObserver.onNext(
+        Game.SuggestionResponse.newBuilder()
+            .setMove(Strategies.FIRST_ALLOWED_MOVE.suggestNextMove(state))
+            .build());
     responseObserver.onCompleted();
   }
 }

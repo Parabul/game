@@ -20,17 +20,15 @@ public class NormalizedStateEncoderTest {
             /* specialCells= */ ImmutableMap.of(Player.ONE, 10),
             Player.ONE);
 
-    System.out.println(state);
-
     assertThat(normalizedStateEncoder.encodeSpecialCells(state))
-        .isEqualTo(new double[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+        .isEqualTo(new double[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 
     assertThat(normalizedStateEncoder.encode(state))
         .usingTolerance(0.001)
         .containsExactly(
             new double[] {
-              0.3529, 0.4117, 0, 0, 0, 0, 0, 0, 0, 0.2352, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+              0.3529, 0.4117, 0, 0, 0, 0, 0, 0, 0, 0.2352, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0, 0.0, 0.0,
+              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
             });
   }
 }

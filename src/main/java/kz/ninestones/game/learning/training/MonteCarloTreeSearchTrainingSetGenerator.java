@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import kz.ninestones.game.modeling.strategy.MonteCarloTreeNode;
 import kz.ninestones.game.modeling.strategy.MonteCarloTreeSearch;
 import kz.ninestones.game.persistence.ProtoFiles;
-import kz.ninestones.game.simulation.DistributedMonteCarloPlayOutSimulator;
 
 public class MonteCarloTreeSearchTrainingSetGenerator {
 
@@ -30,18 +29,18 @@ public class MonteCarloTreeSearchTrainingSetGenerator {
   }
 
   public static void main(String[] args) throws IOException {
-//    MonteCarloTreeSearchTrainingSetGenerator generator =
-//        new MonteCarloTreeSearchTrainingSetGenerator();
+    MonteCarloTreeSearchTrainingSetGenerator generator =
+        new MonteCarloTreeSearchTrainingSetGenerator();
 //
-//    //    generator.generateGameSamples(500, RANDOM_TRAINING_DAT);
-//    generator.generateGameSamples(50, RANDOM_TEST_DAT);
+        generator.generateGameSamples(500, RANDOM_TRAINING_DAT);
+    generator.generateGameSamples(50, RANDOM_TEST_DAT);
 
-    MonteCarloTreeSearchTrainingSetGenerator generatorMinimax =
-        new MonteCarloTreeSearchTrainingSetGenerator(
-            () -> new MonteCarloTreeSearch(new DistributedMonteCarloPlayOutSimulator()));
-    //
-        generatorMinimax.generateGameSamples(500, MINIMAX_TRAINING_DAT);
-        generatorMinimax.generateGameSamples(50, MINIMAX_TEST_DAT);
+//    MonteCarloTreeSearchTrainingSetGenerator generatorMinimax =
+//        new MonteCarloTreeSearchTrainingSetGenerator(
+//            () -> new MonteCarloTreeSearch(new DistributedMonteCarloPlayOutSimulator()));
+//    //
+//        generatorMinimax.generateGameSamples(500, MINIMAX_TRAINING_DAT);
+//        generatorMinimax.generateGameSamples(50, MINIMAX_TEST_DAT);
   }
 
   public void generateGameSamples(int expansions, String file) throws IOException {

@@ -1,9 +1,7 @@
 package kz.ninestones.game.modeling.strategy;
 
-import kz.ninestones.game.learning.encode.DirectStateEncoder;
-import kz.ninestones.game.modeling.evaluation.MonteCartoStateEvaluator;
-import kz.ninestones.game.modeling.evaluation.NeuralNetStateEvaluator;
 import kz.ninestones.game.modeling.evaluation.ScoreDiffStateEvaluator;
+import kz.ninestones.game.modeling.evaluation.TensforFlowStateEvaluator;
 
 public class Strategies {
 
@@ -14,24 +12,6 @@ public class Strategies {
 
   public static final Strategy MAX_SCORE_DIFF = new MaxStrategy(new ScoreDiffStateEvaluator());
 
-  public static final Strategy NEURAL_NET_2 =
-      new MatrixMinMaxStrategy(
-          new NeuralNetStateEvaluator("/home/anarbek/projects/ninestones/models/second.model"));
-
-  public static final Strategy NEURAL_NET_1 =
-      new MatrixMinMaxStrategy(
-          new NeuralNetStateEvaluator("/home/anarbek/projects/ninestones/models/first.model"));
-
-  public static final Strategy LATEST =
-      new MatrixMinMaxStrategy(
-          new NeuralNetStateEvaluator("/home/anarbek/projects/ninestones/models/3.1.model"));
-
-  public static final Strategy MONTE_CARLO =
-      new MatrixMinMaxStrategy(new MonteCartoStateEvaluator());
-
-  public static final Strategy MONTE_CARLO_2 =
-      new MatrixMinMaxStrategy(
-          new MonteCartoStateEvaluator(
-              "/home/anarbek/projects/ninestones/models/monte_carlo_03.model",
-              new DirectStateEncoder()));
+  public static final Strategy TENSOR_FLOW =
+      new MatrixMinMaxStrategy(new TensforFlowStateEvaluator());
 }

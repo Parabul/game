@@ -3,9 +3,9 @@ package kz.ninestones.game.rpc;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
-import kz.ninestones.game.rpc.service.GameSimulatorServiceGrpcImpl;
+import kz.ninestones.game.rpc.service.GameSimulatorService;
 
-public class Main {
+public class ServerStarter {
   public static void main(String[] args) {
     try {
       /* *
@@ -13,7 +13,7 @@ public class Main {
        * and it finds a service declaration in your proto file.
        * Do not forget the client must use the same port in order to connect to this server.
        * */
-      Server server = ServerBuilder.forPort(8999).addService(new GameSimulatorServiceGrpcImpl()).build();
+      Server server = ServerBuilder.forPort(8999).addService(new GameSimulatorService()).build();
 
       server.start();
       System.out.println("Server started at " + server.getPort());

@@ -1,0 +1,39 @@
+
+<!--        <dependency>-->
+<!--            <artifactId>${nd4j.backend}</artifactId>-->
+<!--            <groupId>org.nd4j</groupId>-->
+<!--            <version>${dl4j-master.version}</version>-->
+<!--        </dependency>-->
+
+
+<!--        <dependency>-->
+<!--            <artifactId>datavec-api</artifactId>-->
+<!--            <groupId>org.datavec</groupId>-->
+<!--            <version>${dl4j-master.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <artifactId>datavec-data-image</artifactId>-->
+<!--            <groupId>org.datavec</groupId>-->
+<!--            <version>${dl4j-master.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <artifactId>datavec-local</artifactId>-->
+<!--            <groupId>org.datavec</groupId>-->
+<!--            <version>${dl4j-master.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <artifactId>deeplearning4j-datasets</artifactId>-->
+<!--            <groupId>org.deeplearning4j</groupId>-->
+<!--            <version>${dl4j-master.version}</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <artifactId>deeplearning4j-core</artifactId>
+            <groupId>org.deeplearning4j</groupId>
+            <version>${dl4j-master.version}</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <artifactId>resources</artifactId>-->
+<!--            <groupId>org.deeplearning4j</groupId>-->
+<!--            <version>${dl4j-master.version}</version>-->
+<!--        </dependency>-->

@@ -12,6 +12,8 @@ service GameSimulator {
   rpc SayHello (HelloRequest) returns (HelloResponse) {}
 
   rpc Move (PolicyRequest) returns (PolicyResponse) {}
+
+  rpc Suggest (SuggestionRequest) returns (SuggestionResponse) {}
 }
 
 // The request message containing the user's name.
@@ -68,4 +70,19 @@ message PolicyRequest {
 message PolicyResponse {
   GameStatus game_status = 1;
   StateProto current_state = 2;
+}
+
+enum Model {
+  RANDOM = 0;
+  MINIMAX = 1;
+  NN_MINIMAX = 2;
+}
+
+message SuggestionRequest {
+  repeated int32 moves = 1;
+  Model model = 2;
+}
+
+message SuggestionResponse {
+  int32 move = 1;
 }

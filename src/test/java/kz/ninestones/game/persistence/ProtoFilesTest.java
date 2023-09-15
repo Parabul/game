@@ -1,20 +1,18 @@
 package kz.ninestones.game.persistence;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import com.google.common.collect.ImmutableList;
-import com.google.common.truth.Truth;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.IntStream;
-
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.proto.Game;
 import kz.ninestones.game.simulation.GameSimulator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import static com.google.common.truth.Truth.assertThat;
 
 public class ProtoFilesTest {
 

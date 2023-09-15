@@ -12,11 +12,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-public class GameSimulatorServiceGrpcImplTest {
+public class GameSimulatorServiceTest {
 
   @Mock private StreamObserver<Game.HelloResponse> helloResponseObserver;
 
   @Mock private StreamObserver<Game.PolicyResponse> policyResponseObserver;
+
+  @Mock private StreamObserver<Game.SuggestionResponse> suggestionResponseObserver;
 
   @Before
   public void initMocks() {
@@ -25,7 +27,7 @@ public class GameSimulatorServiceGrpcImplTest {
 
   @Test
   public void shouldSayHello() {
-    GameSimulatorServiceGrpcImpl simulatorServiceGrpc = new GameSimulatorServiceGrpcImpl();
+    GameSimulatorService simulatorServiceGrpc = new GameSimulatorService();
 
     simulatorServiceGrpc.sayHello(
         Game.HelloRequest.newBuilder().setName("Alem").build(), helloResponseObserver);
@@ -37,7 +39,7 @@ public class GameSimulatorServiceGrpcImplTest {
 
   @Test
   public void shouldProvideDefaultState() {
-    GameSimulatorServiceGrpcImpl simulatorServiceGrpc = new GameSimulatorServiceGrpcImpl();
+    GameSimulatorService simulatorServiceGrpc = new GameSimulatorService();
 
     simulatorServiceGrpc.move(Game.PolicyRequest.newBuilder().build(), policyResponseObserver);
 
@@ -53,7 +55,7 @@ public class GameSimulatorServiceGrpcImplTest {
 
   @Test
   public void shouldProvideStateAfterFewMoves() {
-    GameSimulatorServiceGrpcImpl simulatorServiceGrpc = new GameSimulatorServiceGrpcImpl();
+    GameSimulatorService simulatorServiceGrpc = new GameSimulatorService();
 
     simulatorServiceGrpc.move(
         Game.PolicyRequest.newBuilder().addMoves(9).addMoves(7).build(), policyResponseObserver);
@@ -75,5 +77,19 @@ public class GameSimulatorServiceGrpcImplTest {
                     .setGameStatus(Game.GameStatus.ACTIVE)
                     .build()));
     verify(policyResponseObserver).onCompleted();
+  }
+
+  @Test
+  public void shouldSuggestNextMove() {
+    GameSimulatorService simulatorServiceGrpc = new GameSimulatorService();
+
+    simulatorServiceGrpc.suggest(
+        Game.SuggestionRequest.newBuilder().addMoves(9).addMoves(7).build(),
+        suggestionResponseObserver);
+
+    verify(suggestionResponseObserver)
+        .onNext(Mockito.eq(Game.SuggestionResponse.newBuilder().setMove(1).build()));
+
+    verify(suggestionResponseObserver).onCompleted();
   }
 }

@@ -2,6 +2,8 @@ package kz.ninestones.game.persistence;
 
 import com.google.protobuf.Message;
 import java.io.*;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,6 +48,25 @@ public class ProtoFiles {
       return messages;
     } catch (IOException ex) {
       throw new RuntimeException("File: " + file, ex);
+    }
+  }
+
+  public static List<byte[]> read(ReadableByteChannel channel) {
+    try (DataInputStream inputStream = new DataInputStream(Channels.newInputStream(channel))) {
+
+      int n = inputStream.readInt();
+
+      List<byte[]> messages = new ArrayList<>(n);
+
+      for (int i = 0; i < n; i++) {
+        byte[] messageBytes = new byte[inputStream.readInt()];
+        inputStream.readFully(messageBytes);
+        messages.add(messageBytes);
+      }
+
+      return messages;
+    } catch (IOException ex) {
+      throw new RuntimeException("Channel read failed ", ex);
     }
   }
 }

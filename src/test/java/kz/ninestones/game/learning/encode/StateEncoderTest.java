@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.Test;
 
-class StateEncoderTest {
+public class StateEncoderTest {
     @Test
     public void oneHotShouldReturnArray() {
         assertThat(StateEncoder.oneHot(0)).isEqualTo(new double[] {1, 0, 0, 0, 0, 0, 0, 0, 0});

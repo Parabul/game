@@ -1,5 +1,6 @@
 package kz.ninestones.game.rpc;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import io.grpc.*;
@@ -13,8 +14,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.proto.Game;
-import kz.ninestones.game.proto.GameSimulatorServiceGrpc;
-import org.apache.commons.lang3.time.StopWatch;
+import kz.ninestones.game.proto.GameSimulatorGrpc;
 
 public class Client {
 
@@ -48,8 +48,8 @@ public class Client {
      * Take care if you want to call a rpc function on a blocking stub from UI thread
      * (cause an unresponsive/laggy UI).
      * */
-    GameSimulatorServiceGrpc.GameSimulatorServiceFutureStub simulatorServiceFutureStub =
-        GameSimulatorServiceGrpc.newFutureStub(channel);
+    GameSimulatorGrpc.GameSimulatorFutureStub simulatorServiceFutureStub =
+        GameSimulatorGrpc.newFutureStub(channel);
 
     /* *
      * Asynchronous instance of the above declaration.
@@ -63,7 +63,7 @@ public class Client {
      * We can get via generated functions every field from our message, in this case we have just one field.
      * */
 
-    StopWatch stopWatch = StopWatch.createStarted();
+    Stopwatch stopWatch = Stopwatch.createStarted();
 
     List<ListenableFuture<Game.GameSimulatorResponse>> replies = new ArrayList<>();
     for (int i = 0; i < 24; i++) {
@@ -76,12 +76,12 @@ public class Client {
                   .build()));
     }
 
-    System.out.println(stopWatch.formatTime());
+    System.out.println(stopWatch.elapsed());
 
     Futures.allAsList(replies).get().forEach(reply -> System.out.println(reply));
 
 
-    System.out.println(stopWatch.formatTime());
+    System.out.println(stopWatch.elapsed());
 
     channel.shutdown();
   }

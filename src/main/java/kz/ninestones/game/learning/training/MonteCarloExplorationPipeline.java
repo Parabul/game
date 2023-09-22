@@ -1,6 +1,5 @@
 package kz.ninestones.game.learning.training;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,12 +8,10 @@ import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
 import kz.ninestones.game.learning.encode.StateEncoder;
 import kz.ninestones.game.learning.montecarlo.TreeSearch;
 import kz.ninestones.game.simulation.montecarlo.MinMaxMonteCarloPlayOutSimulator;
-import kz.ninestones.game.simulation.montecarlo.RandomMonteCarloPlayOutSimulator;
 import kz.ninestones.game.utils.BeamTypes;
 import org.apache.beam.runners.flink.FlinkPipelineOptions;
 import org.apache.beam.runners.flink.FlinkRunner;
 import org.apache.beam.sdk.Pipeline;
-import org.apache.beam.sdk.io.FileIO;
 import org.apache.beam.sdk.io.TFRecordIO;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.FlatMapElements;

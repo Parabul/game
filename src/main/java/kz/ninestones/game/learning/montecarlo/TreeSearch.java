@@ -3,8 +3,8 @@ package kz.ninestones.game.learning.montecarlo;
 import java.util.*;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
-import kz.ninestones.game.simulation.montecarlo.RandomMonteCarloPlayOutSimulator;
 import kz.ninestones.game.simulation.montecarlo.MonteCarloPlayOutSimulator;
+import kz.ninestones.game.simulation.montecarlo.RandomMonteCarloPlayOutSimulator;
 
 public class TreeSearch {
 

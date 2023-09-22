@@ -1,8 +1,7 @@
 package kz.ninestones.game.learning.encode;
 
-import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Floats;
 import java.util.Arrays;
-import java.util.stream.Stream;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
 
@@ -14,17 +13,14 @@ import kz.ninestones.game.core.State;
 public class NormalizedStateEncoder implements StateEncoder {
   private static final int NUM_FEATURES = 39;
 
-  public double[] encodeSpecialCells(State state) {
+  public float[] encodeSpecialCells(State state) {
     int playerOneSpecial = state.specialCells.getOrDefault(Player.ONE, -1);
     int playerTwoSpecial = state.specialCells.getOrDefault(Player.TWO, -1);
+    return Floats.concat(encodeSpecialCell(playerOneSpecial), encodeSpecialCell(playerTwoSpecial));
+  }
 
-    double[] specialCells =
-        Stream.of(playerOneSpecial, playerTwoSpecial)
-            .map(specialCell -> specialCell > 8 ? specialCell - 9 : specialCell)
-            .map(StateEncoder::oneHot)
-            .flatMapToDouble(Arrays::stream)
-            .toArray();
-    return specialCells;
+  public float[] encodeSpecialCell(int cell) {
+    return StateEncoder.oneHot(cell > 8 ? cell - 9 : cell);
   }
 
   @Override
@@ -32,21 +28,23 @@ public class NormalizedStateEncoder implements StateEncoder {
     return NUM_FEATURES;
   }
 
-  public double[] encode(State state) {
+  public float[] encode(State state) {
     // 2 X 9 (cells) + 2 X 8 (special cell) + 2 X 1 (score) + 1 (nextMove)
 
-    double sum = Arrays.stream(state.cells).sum();
+    float sum = (float) Arrays.stream(state.cells).sum();
 
-    double[] cells = Arrays.stream(state.cells).mapToDouble(cell -> cell / sum).toArray();
+    float[] cells = new float[state.cells.length];
 
-    double[] scores =
-        state.score.values().stream()
-            .mapToDouble(score -> score > 81 ? 1.0 : 1.0 * score / 82.0)
-            .toArray();
+    for (int i = 0; i < state.cells.length; i++) {
+      cells[i] = state.cells[i] / sum;
+    }
 
-    double[] specialCells = encodeSpecialCells(state);
+    float[] scores =
+        new float[] {state.score.get(Player.ONE) / 82.0f, state.score.get(Player.TWO) / 82.0f};
 
-    double[] nextMove = new double[] {state.nextMove.ordinal()};
-    return Doubles.concat(cells, specialCells, scores, nextMove);
+    float[] specialCells = encodeSpecialCells(state);
+
+    float[] nextMove = new float[] {(float) state.nextMove.ordinal()};
+    return Floats.concat(cells, specialCells, scores, nextMove);
   }
 }

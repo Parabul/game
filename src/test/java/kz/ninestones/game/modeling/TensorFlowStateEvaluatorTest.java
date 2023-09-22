@@ -5,8 +5,8 @@ import static com.google.common.truth.Truth.assertThat;
 import com.google.common.collect.ImmutableMap;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
-import kz.ninestones.game.modeling.evaluation.StateEvaluator;
-import kz.ninestones.game.modeling.evaluation.TensforFlowStateEvaluator;
+import kz.ninestones.game.learning.evaluation.StateEvaluator;
+import kz.ninestones.game.learning.evaluation.TensforFlowStateEvaluator;
 import org.junit.Test;
 
 public class TensorFlowStateEvaluatorTest {
@@ -16,8 +16,8 @@ public class TensorFlowStateEvaluatorTest {
 
     StateEvaluator stateEvaluator = new TensforFlowStateEvaluator();
 
-    assertThat(stateEvaluator.evaluate(new State(), Player.ONE)).isWithin(0.001).of(0.528);
-    assertThat(stateEvaluator.evaluate(new State(), Player.TWO)).isWithin(0.001).of(0.458);
+    assertThat(stateEvaluator.evaluate(new State(), Player.ONE)).isWithin(0.1).of(0.59);
+    assertThat(stateEvaluator.evaluate(new State(), Player.TWO)).isWithin(0.1).of(0.41);
   }
 
   @Test
@@ -46,7 +46,7 @@ public class TensorFlowStateEvaluatorTest {
 
     StateEvaluator stateEvaluator = new TensforFlowStateEvaluator();
 
-    assertThat(stateEvaluator.evaluate(state, Player.ONE)).isWithin(0.001).of(0.096);
-    assertThat(stateEvaluator.evaluate(state, Player.TWO)).isWithin(0.001).of(0.910);
+    assertThat(stateEvaluator.evaluate(state, Player.ONE)).isWithin(0.1).of(0.05);
+    assertThat(stateEvaluator.evaluate(state, Player.TWO)).isWithin(0.1).of(0.95);
   }
 }

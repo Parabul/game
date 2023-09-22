@@ -1,11 +1,11 @@
-package kz.ninestones.game.modeling.evaluation;
+package kz.ninestones.game.learning.evaluation;
 
 import java.util.Optional;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
 
-public class ScoreStateEvaluator implements StateEvaluator {
+public class ScoreDiffStateEvaluator implements StateEvaluator {
 
 
   @Override
@@ -15,6 +15,13 @@ public class ScoreStateEvaluator implements StateEvaluator {
       return winner.isPresent() && winner.get().equals(player) ? 1 : 0;
     }
 
-    return state.score.get(player) > 81 ? 1.0 : state.score.get(player) / 82.0;
+    int diff = state.score.get(player) - state.score.get(player.opponent);
+    if (diff > 81) {
+      return 1;
+    }
+    if (diff < -81) {
+      return 0;
+    }
+    return ((diff / 81.0) + 1.0) / 2;
   }
 }

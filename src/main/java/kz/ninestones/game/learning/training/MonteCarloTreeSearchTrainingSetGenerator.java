@@ -3,8 +3,8 @@ package kz.ninestones.game.learning.training;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.function.Supplier;
-import kz.ninestones.game.modeling.strategy.MonteCarloTreeNode;
-import kz.ninestones.game.modeling.strategy.MonteCarloTreeSearch;
+import kz.ninestones.game.learning.montecarlo.TreeNode;
+import kz.ninestones.game.learning.montecarlo.TreeSearch;
 import kz.ninestones.game.persistence.ProtoFiles;
 
 public class MonteCarloTreeSearchTrainingSetGenerator {
@@ -17,15 +17,15 @@ public class MonteCarloTreeSearchTrainingSetGenerator {
       "/home/anarbek/projects/ninestones/data/minimax/small_training.dat";
   public static final String MINIMAX_TEST_DAT =
       "/home/anarbek/projects/ninestones/data/minimax/small_test.dat";
-  private final Supplier<MonteCarloTreeSearch> monteCarloTreeSearchSupplier;
+  private final Supplier<TreeSearch> monteCarloTreeSearchSupplier;
 
   public MonteCarloTreeSearchTrainingSetGenerator(
-      Supplier<MonteCarloTreeSearch> monteCarloTreeSearchSupplier) {
+      Supplier<TreeSearch> monteCarloTreeSearchSupplier) {
     this.monteCarloTreeSearchSupplier = monteCarloTreeSearchSupplier;
   }
 
   public MonteCarloTreeSearchTrainingSetGenerator() {
-    this(MonteCarloTreeSearch::new);
+    this(TreeSearch::new);
   }
 
   public static void main(String[] args) throws IOException {
@@ -44,7 +44,7 @@ public class MonteCarloTreeSearchTrainingSetGenerator {
   }
 
   public void generateGameSamples(int expansions, String file) throws IOException {
-    MonteCarloTreeSearch monteCarloTreeSearch = monteCarloTreeSearchSupplier.get();
+    TreeSearch monteCarloTreeSearch = monteCarloTreeSearchSupplier.get();
 
     for (int i = 0; i < expansions; i++) {
       System.out.println("expansion: " + i);
@@ -52,6 +52,6 @@ public class MonteCarloTreeSearchTrainingSetGenerator {
     }
 
     ProtoFiles.write(
-        file, Lists.transform(monteCarloTreeSearch.traverse(), MonteCarloTreeNode::toGameSample));
+        file, Lists.transform(monteCarloTreeSearch.traverse(), TreeNode::toGameSample));
   }
 }

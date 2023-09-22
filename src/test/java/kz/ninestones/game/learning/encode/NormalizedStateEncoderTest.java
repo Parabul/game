@@ -21,14 +21,14 @@ public class NormalizedStateEncoderTest {
             Player.ONE);
 
     assertThat(normalizedStateEncoder.encodeSpecialCells(state))
-        .isEqualTo(new double[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
+        .isEqualTo(new float[] {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 
     assertThat(normalizedStateEncoder.encode(state))
         .usingTolerance(0.001)
         .containsExactly(
-            new double[] {
-              0.3529, 0.4117, 0, 0, 0, 0, 0, 0, 0, 0.2352, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0, 0.0, 0.0,
-              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+            new float[] {
+              0.3529f, 0.4117f, 0, 0, 0, 0, 0, 0, 0, 0.2352f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1.0f, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             });
   }
 }

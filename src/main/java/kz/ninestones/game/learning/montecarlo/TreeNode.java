@@ -1,8 +1,10 @@
-package kz.ninestones.game.modeling.strategy;
+package kz.ninestones.game.learning.montecarlo;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.google.mu.util.stream.BiStream;
 import java.util.ArrayList;
@@ -12,33 +14,34 @@ import java.util.stream.IntStream;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
+import kz.ninestones.game.learning.encode.StateEncoder;
 import kz.ninestones.game.proto.Game;
 import kz.ninestones.game.simulation.SimulationResult;
 import kz.ninestones.game.utils.MathUtils;
+import kz.ninestones.game.utils.TensorFlowUtils;
+import org.tensorflow.example.Example;
+import org.tensorflow.example.Features;
 
-public class MonteCarloTreeNode {
+public class TreeNode {
 
-  public static final Supplier<MonteCarloTreeNode> ROOT = MonteCarloTreeNode::new;
+  public static final Supplier<TreeNode> ROOT = TreeNode::new;
 
   public static final double EXPLORATION_WEIGHT = Math.sqrt(2);
-
-  private final MonteCarloTreeNode parent;
-  private final List<MonteCarloTreeNode> children = new ArrayList<>(9);
+  private final List<TreeNode> children = new ArrayList<>(9);
   private final int move;
-
   // this.state := parent.state + this.move
   private final State state;
   private final AtomicLongMap<Player> observedWinners = AtomicLongMap.create();
-  // Player that decides to move to current state/node.
+  private TreeNode parent;
 
-  MonteCarloTreeNode(MonteCarloTreeNode parent, int move) {
+  TreeNode(TreeNode parent, int move) {
     this.parent = parent;
     this.move = move;
     this.state = Policy.makeMove(parent.state, move);
   }
 
   // Root
-  private MonteCarloTreeNode() {
+  private TreeNode() {
     this.parent = null;
     this.move = -1;
     this.state = new State();
@@ -48,7 +51,7 @@ public class MonteCarloTreeNode {
     IntStream.rangeClosed(1, 9)
         .boxed()
         .filter(move -> Policy.isAllowedMove(this.state, move))
-        .map(move -> new MonteCarloTreeNode(this, move))
+        .map(move -> new TreeNode(this, move))
         .forEach(children::add);
   }
 
@@ -63,7 +66,7 @@ public class MonteCarloTreeNode {
 
   @VisibleForTesting
   public void backPropagate(SimulationResult simulationResult) {
-    MonteCarloTreeNode current = this;
+    TreeNode current = this;
     while (current.parent != null) {
       current.parent.update(simulationResult);
       current = current.parent;
@@ -89,7 +92,7 @@ public class MonteCarloTreeNode {
     return observedWinners;
   }
 
-  public List<MonteCarloTreeNode> getChildren() {
+  public List<TreeNode> getChildren() {
     return children;
   }
 
@@ -97,7 +100,7 @@ public class MonteCarloTreeNode {
     return observedWinners.sum();
   }
 
-  public MonteCarloTreeNode getParent() {
+  public TreeNode getParent() {
     return parent;
   }
 
@@ -111,9 +114,53 @@ public class MonteCarloTreeNode {
 
   public Game.GameSample toGameSample() {
     return Game.GameSample.newBuilder()
-        .setState(getState().toProto())
-        .putAllObservedWinners(
-            BiStream.from(getObservedWinners().asMap()).mapKeys(Player::name).toMap())
+        .setState(state.toProto())
+        .putAllObservedWinners(BiStream.from(observedWinners.asMap()).mapKeys(Player::name).toMap())
         .build();
+  }
+
+  public Example toTFExample(final StateEncoder stateEncoder) {
+    float[] input = stateEncoder.encode(state);
+
+    long simulations = getSimulations();
+
+    float[] output =
+        new float[]{
+            1.0f * observedWinners.asMap().getOrDefault(Player.ONE.name(), 0L) / simulations,
+            1.0f * observedWinners.asMap().getOrDefault(Player.TWO.name(), 0L) / simulations,
+            1.0f * observedWinners.asMap().getOrDefault(Player.NONE.name(), 0L) / simulations};
+
+    return Example.newBuilder()
+        .setFeatures(
+            Features.newBuilder()
+                .putFeature("input", TensorFlowUtils.floatList(input))
+                .putFeature("output", TensorFlowUtils.floatList(output)))
+        .build();
+  }
+
+  public void mergeFrom(TreeNode other){
+    this.observedWinners.addAndGet(Player.ONE, other.observedWinners.get(Player.ONE));
+    this.observedWinners.addAndGet(Player.TWO, other.observedWinners.get(Player.TWO));
+    this.observedWinners.addAndGet(Player.NONE, other.observedWinners.get(Player.NONE));
+
+    if(other.getChildren().isEmpty()){
+      return;
+    }
+
+    if(this.getChildren().isEmpty()){
+      for(TreeNode child: other.getChildren()){
+        child.parent = this;
+        this.children.add(child);
+      }
+    }else {
+      ImmutableMap<Integer, TreeNode> selfChildren = Maps.uniqueIndex(this.getChildren(), TreeNode::getMove);
+      ImmutableMap<Integer, TreeNode> otherChildren = Maps.uniqueIndex(other.getChildren(), TreeNode::getMove);
+
+      for(int move= 1;move <= 9; move++){
+        if(selfChildren.containsKey(move)){
+          selfChildren.get(move).mergeFrom(otherChildren.get(move));
+        }
+      }
+    }
   }
 }

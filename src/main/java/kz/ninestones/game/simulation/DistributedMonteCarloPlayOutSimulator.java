@@ -9,9 +9,10 @@ import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import kz.ninestones.game.modeling.strategy.MonteCarloTreeNode;
+import kz.ninestones.game.learning.montecarlo.TreeNode;
 import kz.ninestones.game.proto.Game;
 import kz.ninestones.game.proto.GameSimulatorGrpc;
+import kz.ninestones.game.simulation.montecarlo.MonteCarloPlayOutSimulator;
 
 public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutSimulator {
 
@@ -40,13 +41,13 @@ public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutS
   }
 
   @Override
-  public void playOut(MonteCarloTreeNode currentNode) {
+  public void playOut(TreeNode currentNode) {
 
     List<ListenableFuture<Game.GameSimulatorResponse>> replies = new ArrayList<>();
 
-    final Map<Integer, MonteCarloTreeNode> childNodeByMove = new HashMap<>();
+    final Map<Integer, TreeNode> childNodeByMove = new HashMap<>();
 
-    for (MonteCarloTreeNode childNode : currentNode.getChildren()) {
+    for (TreeNode childNode : currentNode.getChildren()) {
 
       childNodeByMove.put(childNode.getMove(), childNode);
 
@@ -54,7 +55,7 @@ public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutS
           simulatorServiceFutureStub.playOut(
               Game.GameSimulatorRequest.newBuilder()
                   .setLabel(childNode.getMove())
-                  .setNumSimulations(Long.valueOf(getNumsimulations()).intValue())
+                  .setNumSimulations(Long.valueOf(getNumSimulations()).intValue())
                   .setInitialState(childNode.getState().toProto())
                   .build()));
     }
@@ -64,7 +65,7 @@ public class DistributedMonteCarloPlayOutSimulator implements MonteCarloPlayOutS
           .get()
           .forEach(
               reply -> {
-                MonteCarloTreeNode childNode = childNodeByMove.get(reply.getLabel());
+                TreeNode childNode = childNodeByMove.get(reply.getLabel());
 
                 SimulationResult simulationResult =
                     new SimulationResult(reply.getObservedWinnersMap());

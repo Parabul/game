@@ -1,8 +1,5 @@
-package kz.ninestones.game.modeling.evaluation;
+package kz.ninestones.game.learning.evaluation;
 
-import com.google.common.primitives.Doubles;
-import com.google.common.primitives.Floats;
-import java.util.Collection;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
@@ -10,8 +7,6 @@ import kz.ninestones.game.learning.encode.StateEncoder;
 import org.tensorflow.Result;
 import org.tensorflow.SavedModelBundle;
 import org.tensorflow.Session;
-import org.tensorflow.example.Feature;
-import org.tensorflow.example.FloatList;
 import org.tensorflow.ndarray.FloatNdArray;
 import org.tensorflow.ndarray.NdArrays;
 import org.tensorflow.ndarray.Shape;
@@ -25,26 +20,16 @@ public class TensforFlowStateEvaluator implements StateEvaluator {
   private final Session session;
 
   public TensforFlowStateEvaluator() {
-    this.model = SavedModelBundle.load("/home/anarbek/tmp/model/min_max", "serve");
+    this.model = SavedModelBundle.load("/mnt/nfs/models/min_max/stable", "serve");
     this.session = model.session();
     this.stateEncoder = new NormalizedStateEncoder();
-    System.out.println("modelPath: /home/anarbek/tmp/model/min_max");
-  }
-
-  private static <T extends Number> Feature floatList(Collection<T> nums) {
-    FloatList.Builder floatList = FloatList.newBuilder();
-
-    nums.stream().forEach(number -> floatList.addValue(number.floatValue()));
-
-    return Feature.newBuilder().setFloatList(floatList).build();
+    System.out.println("modelPath: /mnt/nfs/models/min_max/stable");
   }
 
   @Override
   public double evaluate(State state, Player player) {
 
-    float[] encoded = Floats.toArray(Doubles.asList(stateEncoder.encode(state)));
-
-    FloatNdArray val = NdArrays.wrap(Shape.of(1, 39), DataBuffers.of(encoded));
+    FloatNdArray val = NdArrays.wrap(Shape.of(1, 39), DataBuffers.of(stateEncoder.encode(state)));
 
     TFloat32 input = TFloat32.tensorOf(val);
 

@@ -1,4 +1,4 @@
-package kz.ninestones.game.modeling.evaluation;
+package kz.ninestones.game.learning.evaluation;
 
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;

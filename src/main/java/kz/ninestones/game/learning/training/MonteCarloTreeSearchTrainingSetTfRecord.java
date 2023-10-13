@@ -77,9 +77,9 @@ public class MonteCarloTreeSearchTrainingSetTfRecord {
 
     float[] output =
         new float[] {
-          1.0f * sample.getObservedWinnersMap().getOrDefault(Player.ONE.name(), 0L) / simulations,
-          1.0f * sample.getObservedWinnersMap().getOrDefault(Player.TWO.name(), 0L) / simulations,
-          1.0f * sample.getObservedWinnersMap().getOrDefault(Player.NONE.name(), 0L) / simulations
+          1.0f * sample.getObservedWinnersMap().getOrDefault(Player.ONE.name(), 0) / simulations,
+          1.0f * sample.getObservedWinnersMap().getOrDefault(Player.TWO.name(), 0) / simulations,
+          1.0f * sample.getObservedWinnersMap().getOrDefault(Player.NONE.name(), 0) / simulations
         };
 
     return Example.newBuilder()

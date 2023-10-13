@@ -1,27 +1,30 @@
 package kz.ninestones.game.simulation;
 
-import com.google.common.util.concurrent.AtomicLongMap;
-import com.google.mu.util.stream.BiStream;
-import java.util.Map;
+import java.util.EnumMap;
 import kz.ninestones.game.core.Player;
 
 public class SimulationResult {
 
-  private final AtomicLongMap<Player> observedWinners;
+  private final EnumMap<Player, Integer> observedWinners = new EnumMap<>(Player.class);
 
-  public SimulationResult(){
-    observedWinners= AtomicLongMap.create();
+  public SimulationResult() {
+    for (Player player : Player.values()) {
+      observedWinners.put(player, 0);
+    }
   }
 
-  public SimulationResult(Map<String, Long> protoMap){
-    observedWinners = AtomicLongMap.create(BiStream.from(protoMap).mapKeys(player -> Player.valueOf(player)).toMap());
+  public void merge(SimulationResult simulationResult) {
+    for (Player player : Player.values()) {
+      observedWinners.put(
+          player, observedWinners.get(player) + simulationResult.getObservedWinners().get(player));
+    }
   }
 
   public void addWinner(Player player) {
-    observedWinners.incrementAndGet(player);
+    observedWinners.put(player, observedWinners.getOrDefault(player, 0) + 1);
   }
 
-  public AtomicLongMap<Player> getObservedWinners() {
+  public EnumMap<Player, Integer> getObservedWinners() {
     return observedWinners;
   }
 }

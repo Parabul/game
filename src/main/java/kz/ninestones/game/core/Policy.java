@@ -59,7 +59,7 @@ public class Policy {
     checkArgument(!isGameOver(state), "Game over: \n %s\n", state.toString());
     checkArgument(isAllowedMove(state, move), "The move is not allowed!");
 
-    State newState = new State(state);
+    State newState = new State(state, state.nextMove.opponent);
 
     Player player = state.nextMove;
 
@@ -118,9 +118,6 @@ public class Policy {
 
       currentCell = nextCell(currentCell);
     }
-
-    // Pass move to the next
-    newState.nextMove = state.nextMove.opponent;
 
     return newState;
   }

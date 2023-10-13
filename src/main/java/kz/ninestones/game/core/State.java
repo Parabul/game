@@ -27,7 +27,7 @@ public class State implements Serializable {
   // For ONE possible range: [9-17]
   // For TWO possible range: [0-8]
   public final EnumMap<Player, Integer> specialCells;
-  public Player nextMove;
+  public final Player nextMove;
 
   public State() {
     cells = new int[18];
@@ -46,6 +46,13 @@ public class State implements Serializable {
     score = new EnumMap(original.score);
     specialCells = new EnumMap(original.specialCells);
     nextMove = original.nextMove;
+  }
+
+  public State(State original, Player nextMove) {
+    cells = Arrays.copyOf(original.cells, original.cells.length);
+    score = new EnumMap(original.score);
+    specialCells = new EnumMap(original.specialCells);
+    this.nextMove = nextMove;
   }
 
   // Sparse init
@@ -111,6 +118,21 @@ public class State implements Serializable {
 
     checkArgument(!state.getNextMove().equals(Game.PlayerProto.NONE), "Player is not set");
     nextMove = Player.valueOf(state.getNextMove().name());
+  }
+
+  public String getId() {
+    StringBuilder sb = new StringBuilder();
+    Arrays.stream(cells).forEachOrdered(cell -> sb.append(cell).append(':'));
+    for (Player player : Player.values()) {
+      sb.append(score.getOrDefault(player, 0))
+          .append(':')
+          .append(specialCells.getOrDefault(player, -1))
+          .append(':');
+    }
+
+    sb.append(nextMove.ordinal());
+
+    return sb.toString();
   }
 
   public Game.StateProto toProto() {

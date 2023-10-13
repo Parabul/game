@@ -9,9 +9,15 @@ import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.modeling.strategy.RandomMoveStrategy;
+import kz.ninestones.game.modeling.strategy.Strategies;
 import kz.ninestones.game.modeling.strategy.Strategy;
 
 public class GameSimulator {
+
+  public static final GameSimulator RANDOM_VS_RANDOM= new GameSimulator(Strategies.RANDOM, Strategies.RANDOM);
+
+  public static final GameSimulator DETEMINISTIC =
+      new GameSimulator(Strategies.FIRST_ALLOWED_MOVE, Strategies.FIRST_ALLOWED_MOVE);
 
   private final EnumMap<Player, Strategy> models;
 

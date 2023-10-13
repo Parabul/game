@@ -21,8 +21,8 @@ public class GameSimulatorTest {
     assertThat(simulator.recordedPlayOut().getWinner()).isEqualTo(Player.TWO);
     assertThat(simulator.recordedPlayOut().getSteps()).hasSize(208);
 
-    assertThat(simulator.playOut(100).getObservedWinners().asMap())
-        .containsExactly(Player.TWO, 100L);
+    assertThat(simulator.playOut(100).getObservedWinners())
+        .containsExactly(Player.TWO, 100);
   }
 
   @Test
@@ -31,7 +31,7 @@ public class GameSimulatorTest {
 
     GameSimulator simulator = new GameSimulator(Strategies.RANDOM, Strategies.RANDOM);
 
-    Map<Player, Long> winners = simulator.playOut(playOuts).getObservedWinners().asMap();
+    Map<Player, Integer> winners = simulator.playOut(playOuts).getObservedWinners();
 
     assertThat(winners).containsKey(Player.ONE);
     assertThat(winners).containsKey(Player.TWO);
@@ -58,8 +58,8 @@ public class GameSimulatorTest {
 
     GameSimulator simulator = new GameSimulator(Strategies.RANDOM, Strategies.RANDOM);
 
-    Map<Player, Long> winners = simulator.playOut(state, playOuts).getObservedWinners().asMap();
+    Map<Player, Integer> winners = simulator.playOut(state, playOuts).getObservedWinners();
 
-    assertThat(winners).containsExactly(Player.TWO, 100L);
+    assertThat(winners).containsExactly(Player.TWO, playOuts);
   }
 }

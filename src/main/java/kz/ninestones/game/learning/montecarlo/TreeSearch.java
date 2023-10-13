@@ -3,23 +3,30 @@ package kz.ninestones.game.learning.montecarlo;
 import java.util.*;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
-import kz.ninestones.game.simulation.montecarlo.MonteCarloPlayOutSimulator;
-import kz.ninestones.game.simulation.montecarlo.RandomMonteCarloPlayOutSimulator;
+import kz.ninestones.game.simulation.GameSimulator;
+import kz.ninestones.game.simulation.SimulationResult;
 
 public class TreeSearch {
 
+  private static final int NUM_SIMULATIONS = 1;
+
   private final TreeNode root;
 
-  private final MonteCarloPlayOutSimulator playOutSimulator;
+  private final GameSimulator gameSimulator;
 
   public TreeSearch() {
-    this(new RandomMonteCarloPlayOutSimulator());
+    this(GameSimulator.RANDOM_VS_RANDOM);
   }
 
-  public TreeSearch(MonteCarloPlayOutSimulator playOutSimulator) {
-    this.playOutSimulator = playOutSimulator;
-    this.root = TreeNode.ROOT.get();
+  public TreeSearch(GameSimulator gameSimulator) {
+    this(gameSimulator, TreeNode.ROOT.get());
   }
+
+  public TreeSearch(GameSimulator gameSimulator, TreeNode root) {
+    this.gameSimulator = gameSimulator;
+    this.root = root;
+  }
+
 
   public void expand() {
 
@@ -30,7 +37,12 @@ public class TreeSearch {
         currentNode.initChildren();
       }
 
-      playOutSimulator.playOut(currentNode);
+      for (TreeNode childNode : currentNode.getChildren()) {
+        SimulationResult simulationResult =
+                gameSimulator.playOut(childNode.getState(), NUM_SIMULATIONS);
+        childNode.update(simulationResult);
+        childNode.backPropagate(simulationResult);
+      }
 
       final Player nextMovePlayer = currentNode.getState().nextMove;
 

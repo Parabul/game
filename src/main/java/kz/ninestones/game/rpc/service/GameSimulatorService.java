@@ -26,7 +26,7 @@ public class GameSimulatorService extends GameSimulatorGrpc.GameSimulatorImplBas
 
     Game.GameSimulatorResponse.Builder response = Game.GameSimulatorResponse.newBuilder();
 
-    BiStream.from(simulations.getObservedWinners().asMap())
+    BiStream.from(simulations.getObservedWinners())
         .mapKeys(Player::name)
         .forEach(response::putObservedWinners);
 

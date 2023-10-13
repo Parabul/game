@@ -60,7 +60,7 @@ message GameSimulatorResponse {
 
 message GameSample {
   StateProto state = 1;
-  map<string, int64> observed_winners = 2;
+  map<string, int32> observed_winners = 2;
 }
 
 message PolicyRequest {

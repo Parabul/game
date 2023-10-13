@@ -5,11 +5,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.AtomicLongMap;
 import com.google.mu.util.stream.BiStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
@@ -22,7 +24,7 @@ import kz.ninestones.game.utils.TensorFlowUtils;
 import org.tensorflow.example.Example;
 import org.tensorflow.example.Features;
 
-public class TreeNode {
+public class TreeNode implements Serializable {
 
   public static final Supplier<TreeNode> ROOT = TreeNode::new;
 
@@ -31,7 +33,7 @@ public class TreeNode {
   private final int move;
   // this.state := parent.state + this.move
   private final State state;
-  private final AtomicLongMap<Player> observedWinners = AtomicLongMap.create();
+  private final EnumMap<Player, Integer> observedWinners = new EnumMap<>(Player.class);
   private TreeNode parent;
 
   TreeNode(TreeNode parent, int move) {
@@ -57,11 +59,12 @@ public class TreeNode {
 
   @VisibleForTesting
   public void update(SimulationResult simulationResult) {
-    simulationResult
-        .getObservedWinners()
-        .asMap()
-        .entrySet()
-        .forEach(entry -> this.observedWinners.addAndGet(entry.getKey(), entry.getValue()));
+    for (Player player : Player.values()) {
+      observedWinners.put(
+          player,
+          observedWinners.getOrDefault(player, 0)
+              + simulationResult.getObservedWinners().getOrDefault(player, 0));
+    }
   }
 
   @VisibleForTesting
@@ -88,7 +91,7 @@ public class TreeNode {
     return exploitation + EXPLORATION_WEIGHT * exploration;
   }
 
-  public AtomicLongMap<Player> getObservedWinners() {
+  public EnumMap<Player, Integer> getObservedWinners() {
     return observedWinners;
   }
 
@@ -97,7 +100,7 @@ public class TreeNode {
   }
 
   public long getSimulations() {
-    return observedWinners.sum();
+    return observedWinners.values().stream().collect(Collectors.summingInt(Integer::intValue));
   }
 
   public TreeNode getParent() {
@@ -115,7 +118,7 @@ public class TreeNode {
   public Game.GameSample toGameSample() {
     return Game.GameSample.newBuilder()
         .setState(state.toProto())
-        .putAllObservedWinners(BiStream.from(observedWinners.asMap()).mapKeys(Player::name).toMap())
+        .putAllObservedWinners(BiStream.from(observedWinners).mapKeys(Player::name).toMap())
         .build();
   }
 
@@ -125,10 +128,11 @@ public class TreeNode {
     long simulations = getSimulations();
 
     float[] output =
-        new float[]{
-            1.0f * observedWinners.asMap().getOrDefault(Player.ONE.name(), 0L) / simulations,
-            1.0f * observedWinners.asMap().getOrDefault(Player.TWO.name(), 0L) / simulations,
-            1.0f * observedWinners.asMap().getOrDefault(Player.NONE.name(), 0L) / simulations};
+        new float[] {
+          1.0f * observedWinners.getOrDefault(Player.ONE.name(), 0) / simulations,
+          1.0f * observedWinners.getOrDefault(Player.TWO.name(), 0) / simulations,
+          1.0f * observedWinners.getOrDefault(Player.NONE.name(), 0) / simulations
+        };
 
     return Example.newBuilder()
         .setFeatures(
@@ -138,29 +142,46 @@ public class TreeNode {
         .build();
   }
 
-  public void mergeFrom(TreeNode other){
-    this.observedWinners.addAndGet(Player.ONE, other.observedWinners.get(Player.ONE));
-    this.observedWinners.addAndGet(Player.TWO, other.observedWinners.get(Player.TWO));
-    this.observedWinners.addAndGet(Player.NONE, other.observedWinners.get(Player.NONE));
-
-    if(other.getChildren().isEmpty()){
+  public void mergeFrom(TreeNode other) {
+    for (Player player : Player.values()) {
+      this.observedWinners.put(
+          player,
+          this.observedWinners.getOrDefault(player, 0)
+              + other.observedWinners.getOrDefault(player, 0));
+    }
+    if (other.getChildren().isEmpty()) {
       return;
     }
 
-    if(this.getChildren().isEmpty()){
-      for(TreeNode child: other.getChildren()){
+    if (this.getChildren().isEmpty()) {
+      for (TreeNode child : other.getChildren()) {
         child.parent = this;
         this.children.add(child);
       }
-    }else {
-      ImmutableMap<Integer, TreeNode> selfChildren = Maps.uniqueIndex(this.getChildren(), TreeNode::getMove);
-      ImmutableMap<Integer, TreeNode> otherChildren = Maps.uniqueIndex(other.getChildren(), TreeNode::getMove);
+    } else {
+      ImmutableMap<Integer, TreeNode> selfChildren =
+          Maps.uniqueIndex(this.getChildren(), TreeNode::getMove);
+      ImmutableMap<Integer, TreeNode> otherChildren =
+          Maps.uniqueIndex(other.getChildren(), TreeNode::getMove);
 
-      for(int move= 1;move <= 9; move++){
-        if(selfChildren.containsKey(move)){
+      for (int move = 1; move <= 9; move++) {
+        if (selfChildren.containsKey(move)) {
           selfChildren.get(move).mergeFrom(otherChildren.get(move));
         }
       }
     }
+  }
+
+  public List<FlatNode> traverseToFlat(List<FlatNode> nodes) {
+    nodes.add(
+        new FlatNode(
+            move, parent != null ? parent.getMove() : -1, observedWinners, children.isEmpty()));
+
+    if (!children.isEmpty()) {
+      children.forEach(node -> node.traverseToFlat(nodes));
+      nodes.add(FlatNode.DIVIDER);
+    }
+
+    return nodes;
   }
 }

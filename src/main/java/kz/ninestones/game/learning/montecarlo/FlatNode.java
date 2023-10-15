@@ -2,13 +2,9 @@ package kz.ninestones.game.learning.montecarlo;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import com.google.common.util.concurrent.AtomicLongMap;
-import kz.ninestones.game.core.Player;
-
 import java.util.EnumMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
+import kz.ninestones.game.core.Player;
 
 public class FlatNode {
 

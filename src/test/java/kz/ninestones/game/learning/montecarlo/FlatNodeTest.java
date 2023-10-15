@@ -2,11 +2,9 @@ package kz.ninestones.game.learning.montecarlo;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import com.google.common.util.concurrent.AtomicLongMap;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
-
 import kz.ninestones.game.core.Player;
 import org.junit.Test;
 

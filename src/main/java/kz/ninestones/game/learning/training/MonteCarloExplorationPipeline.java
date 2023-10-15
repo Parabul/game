@@ -8,7 +8,6 @@ import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
 import kz.ninestones.game.learning.encode.StateEncoder;
 import kz.ninestones.game.learning.montecarlo.TreeNode;
 import kz.ninestones.game.learning.montecarlo.TreeSearch;
-import kz.ninestones.game.modeling.strategy.Strategies;
 import kz.ninestones.game.simulation.GameSimulator;
 import kz.ninestones.game.utils.BeamTypes;
 import org.apache.beam.sdk.Pipeline;

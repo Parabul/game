@@ -22,7 +22,7 @@ public class GameSimulatorTest {
     assertThat(simulator.recordedPlayOut().getSteps()).hasSize(208);
 
     assertThat(simulator.playOut(100).getObservedWinners())
-        .containsExactly(Player.TWO, 100);
+        .containsExactly(Player.TWO, 100, Player.ONE, 0, Player.NONE, 0);
   }
 
   @Test
@@ -60,6 +60,6 @@ public class GameSimulatorTest {
 
     Map<Player, Integer> winners = simulator.playOut(state, playOuts).getObservedWinners();
 
-    assertThat(winners).containsExactly(Player.TWO, playOuts);
+    assertThat(winners).containsExactly(Player.TWO, playOuts, Player.ONE, 0, Player.NONE, 0);
   }
 }

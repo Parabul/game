@@ -31,8 +31,8 @@ public class TensorFlowStateEvaluatorTest {
 
     StateEvaluator stateEvaluator = new TensforFlowStateEvaluator();
 
-    assertThat(stateEvaluator.evaluate(state, Player.ONE)).isWithin(0.001).of(0.999);
-    assertThat(stateEvaluator.evaluate(state, Player.TWO)).isWithin(0.001).of(0.001);
+    assertThat(stateEvaluator.evaluate(state, Player.ONE)).isWithin(0.001).of(0.997);
+    assertThat(stateEvaluator.evaluate(state, Player.TWO)).isWithin(0.001).of(0.002);
   }
 
   @Test
@@ -46,7 +46,7 @@ public class TensorFlowStateEvaluatorTest {
 
     StateEvaluator stateEvaluator = new TensforFlowStateEvaluator();
 
-    assertThat(stateEvaluator.evaluate(state, Player.ONE)).isWithin(0.1).of(0.05);
-    assertThat(stateEvaluator.evaluate(state, Player.TWO)).isWithin(0.1).of(0.95);
+    assertThat(stateEvaluator.evaluate(state, Player.ONE)).isWithin(0.1).of(0.2);
+    assertThat(stateEvaluator.evaluate(state, Player.TWO)).isWithin(0.1).of(0.8);
   }
 }

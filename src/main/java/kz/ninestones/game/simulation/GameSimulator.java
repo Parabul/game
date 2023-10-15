@@ -16,6 +16,9 @@ public class GameSimulator {
 
   public static final GameSimulator RANDOM_VS_RANDOM= new GameSimulator(Strategies.RANDOM, Strategies.RANDOM);
 
+  public static final GameSimulator MINIMAX= new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.MIN_MAX_SCORE_DIFF);
+
+
   public static final GameSimulator DETEMINISTIC =
       new GameSimulator(Strategies.FIRST_ALLOWED_MOVE, Strategies.FIRST_ALLOWED_MOVE);
 

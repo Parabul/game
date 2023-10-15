@@ -28,13 +28,13 @@ public class MonteCarloTreeSearchTest {
     monteCarloTreeSearchNew.expand();
 
     List<String> traversalNew =
-        monteCarloTreeSearchNew.getIndex().values().stream()
+        monteCarloTreeSearchNew.getTreeData().getIndex().values().stream()
             .map(node -> node.getState().getId())
             .collect(Collectors.toList());
 
     assertThat(traversalNew).containsExactlyElementsIn(traversal);
 
-    StateNode rootNew = monteCarloTreeSearchNew.getIndex().get((new State()).getId());
+    StateNode rootNew = monteCarloTreeSearchNew.getTreeData().getIndex().get((new State()).getId());
     assertThat(rootNew.getSimulations()).isEqualTo(1084);
     assertThat(rootNew.getObservedOutcomes().get(Player.ONE)).isEqualTo(264);
     assertThat(rootNew.getObservedOutcomes().get(Player.TWO)).isEqualTo(820);
@@ -50,7 +50,7 @@ public class MonteCarloTreeSearchTest {
       monteCarloTreeSearchNew.expand();
     }
 
-    StateNode rootNew = monteCarloTreeSearchNew.getIndex().get((new State()).getId());
+    StateNode rootNew = monteCarloTreeSearchNew.getTreeData().getIndex().get((new State()).getId());
 
     System.out.println(rootNew.getObservedOutcomes());
 

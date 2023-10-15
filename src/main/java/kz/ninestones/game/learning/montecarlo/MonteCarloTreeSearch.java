@@ -1,6 +1,7 @@
 package kz.ninestones.game.learning.montecarlo;
 
 import com.google.common.collect.ArrayListMultimap;
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -13,74 +14,76 @@ import kz.ninestones.game.utils.MathUtils;
 
 public class MonteCarloTreeSearch {
 
+  private static final State ROOT = new State();
+
+  public static final String ROOT_ID = ROOT.getId();
+
   private static final int NUM_SIMULATIONS = 1;
   private static final double EXPLORATION_WEIGHT = Math.sqrt(2);
 
   private final GameSimulator gameSimulator;
 
-  private final Map<String, StateNode> index = new HashMap<>();
-
-  private final ArrayListMultimap<String, String> parentToChild = ArrayListMultimap.create();
-
-  private final String rootId;
+  private final TreeData treeData;
 
   public MonteCarloTreeSearch(GameSimulator gameSimulator) {
+    this(gameSimulator, new TreeData());
+  }
+
+  public MonteCarloTreeSearch(GameSimulator gameSimulator, TreeData treeData) {
     this.gameSimulator = gameSimulator;
-    State rootState = new State();
-    this.rootId = rootState.getId();
-    index.put(rootId, new StateNode(rootState));
+    this.treeData = treeData;
+    this.treeData.index.putIfAbsent(ROOT_ID, new StateNode(ROOT));
   }
 
   public void expand() {
-    StateNode currentNode = index.get(rootId);
+    StateNode currentNode = this.treeData.index.get(ROOT_ID);
 
     Stack<NodeStats> backProgagationStack = new Stack<>();
 
     while (!Policy.isGameOver(currentNode.getState())) {
-//      System.out.println(currentNode.getState());
+      //      System.out.println(currentNode.getState());
 
       String currentNodeId = currentNode.getState().getId();
 
-      if (!parentToChild.containsKey(currentNodeId)) {
-        initChildren(currentNodeId);
+      if (!this.treeData.parentToChild.containsKey(currentNodeId)) {
+        initChildren(currentNode, currentNodeId);
       }
 
+      List<StateNode> childNodes =
+          this.treeData.parentToChild.get(currentNodeId).stream()
+              .map(this.treeData.index::get)
+              .collect(Collectors.toList());
+
       SimulationResult simulationResultToPropagate = new SimulationResult();
-      for (String childNodeId : parentToChild.get(currentNodeId)) {
-        StateNode childNode = index.get(childNodeId);
+      for (StateNode childNode : childNodes) {
         SimulationResult simulationResult =
             gameSimulator.playOut(childNode.getState(), NUM_SIMULATIONS);
         childNode.update(simulationResult);
         simulationResultToPropagate.merge(simulationResult);
       }
 
-      backProgagationStack.push(new NodeStats(currentNodeId, simulationResultToPropagate));
-
-      final Player nextMovePlayer = currentNode.getState().nextMove;
+      backProgagationStack.push(new NodeStats(currentNode, simulationResultToPropagate));
 
       final long simulations =
           currentNode.getSimulations()
               + simulationResultToPropagate.getObservedWinners().values().stream()
                   .collect(Collectors.summingInt(Integer::intValue));
 
-
       currentNode =
-              parentToChild.get(currentNodeId).stream()
-              .map(index::get)
-              .max(Comparator.comparing(node -> getWeight(simulations, node, nextMovePlayer)))
-              .get();
+          Collections.max(childNodes, Comparator.comparing(node -> getWeight(simulations, node)));
     }
 
     SimulationResult simulationResultToPropagate = new SimulationResult();
     while (!backProgagationStack.empty()) {
       NodeStats nodeStats = backProgagationStack.pop();
       simulationResultToPropagate.merge(nodeStats.simulationResult);
-      index.get(nodeStats.nodeId).update(simulationResultToPropagate);
+      nodeStats.node.update(simulationResultToPropagate);
     }
   }
 
-  private Double getWeight(long parentSimulations, StateNode childNode, Player player) {
+  private Double getWeight(long parentSimulations, StateNode childNode) {
     long childNodeSimulations = childNode.getSimulations();
+    Player nextMovePlayer = childNode.getState().nextMove.opponent;
 
     double exploration =
         (parentSimulations > 0 && childNodeSimulations > 0)
@@ -88,37 +91,66 @@ public class MonteCarloTreeSearch {
             : 0;
     double exploitation =
         childNodeSimulations > 0
-            ? 1.0 * childNode.getObservedOutcomes().get(player) / childNodeSimulations
+            ? 1.0 * childNode.getObservedOutcomes().get(nextMovePlayer) / childNodeSimulations
             : 0;
 
     return exploitation + EXPLORATION_WEIGHT * exploration;
   }
 
-  private Collection<String> initChildren(String stateId) {
-    final StateNode currentStateNode = index.get(stateId);
+  private void initChildren(final StateNode stateNode, final String stateId) {
+    State parentState = stateNode.getState();
     IntStream.rangeClosed(1, 9)
-        .filter(move -> Policy.isAllowedMove(currentStateNode.getState(), move))
+        .filter(move -> Policy.isAllowedMove(parentState, move))
         .forEach(
             move -> {
-              State childState = Policy.makeMove(currentStateNode.getState(), move);
-              index.putIfAbsent(childState.getId(), new StateNode(childState));
-              parentToChild.put(stateId, childState.getId());
+              State childState = Policy.makeMove(parentState, move);
+              String childStateId = childState.getId();
+              this.treeData.index.putIfAbsent(childStateId, new StateNode(childState));
+              this.treeData.parentToChild.put(stateId, childStateId);
             });
-
-    return parentToChild.get(stateId);
   }
 
-  public Map<String, StateNode> getIndex() {
-    return index;
+  public TreeData getTreeData() {
+    return treeData;
   }
 
   private static class NodeStats {
-    final String nodeId;
+    final StateNode node;
     final SimulationResult simulationResult;
 
-    NodeStats(String nodeId, SimulationResult simulationResult) {
-      this.nodeId = nodeId;
+    NodeStats(StateNode node, SimulationResult simulationResult) {
+      this.node = node;
       this.simulationResult = simulationResult;
+    }
+  }
+
+  public static class TreeData implements Serializable {
+    private final Map<String, StateNode> index;
+
+    private final ArrayListMultimap<String, String> parentToChild;
+
+    public TreeData(){
+      index = new HashMap<>();
+      parentToChild  = ArrayListMultimap.create();
+    }
+
+    public TreeData(TreeData other){
+      index = new HashMap<>();
+      other.index.forEach((key, value) -> index.put(key, new StateNode(value)));
+      parentToChild  = ArrayListMultimap.create(other.parentToChild);
+    }
+
+    public void merge(TreeData other) {
+      other.getIndex().forEach((key, value) -> this.index.merge(key, value, (o, n) -> o.merge(n)));
+      this.parentToChild.putAll(other.parentToChild);
+    }
+
+    public Map<String, StateNode> getIndex() {
+      return index;
+    }
+
+    public ArrayListMultimap<String, String> getParentToChild() {
+      return parentToChild;
     }
   }
 }

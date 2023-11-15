@@ -3,117 +3,124 @@ package kz.ninestones.game.learning.training;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import kz.ninestones.game.core.State;
 import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
 import kz.ninestones.game.learning.encode.StateEncoder;
 import kz.ninestones.game.learning.montecarlo.MonteCarloTreeSearch;
+import kz.ninestones.game.learning.montecarlo.StateNode;
+import kz.ninestones.game.proto.Game;
 import kz.ninestones.game.simulation.GameSimulator;
+import kz.ninestones.game.simulation.SimulationResult;
 import kz.ninestones.game.utils.BeamTypes;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.io.TFRecordIO;
+import org.apache.beam.sdk.options.Default;
+import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.*;
-import org.apache.beam.sdk.values.TypeDescriptor;
 import org.tensorflow.example.Example;
 
 public class MonteCarloTreeSearchExplorationPipeline {
 
-  private static final String OUTPUT = "/home/anarbek/tmp/min_max/training_4_100.tfrecord";
-  //  private static final String OUTPUT = "/mnt/nfs/tmp/explore/50_100_minimax_training.tfrecord";
-
-  private static final int NUM_INSTANCES = 4;
-
-  private static final int NUM_EXPANSES = 100;
-
   public static void main(String[] args) {
-    //    FlinkPipelineOptions options = FlinkPipelineOptions.defaults();
-    //    options.setFlinkMaster("192.168.0.51:8081");
-    //    options.setParallelism(8);
-    //    options.setJobName("MonteCarloExplorationPipeline");
-    //    options.setFasterCopy(true);
-
-    PipelineOptions options = PipelineOptionsFactory.create();
+    ExplorationPipelineOptions options =
+        PipelineOptionsFactory.fromArgs(args).withValidation().as(ExplorationPipelineOptions.class);
 
     Pipeline p = Pipeline.create(options);
 
-    //    FlinkRunner flinkRunner = FlinkRunner.fromOptions(options);
-
-    List<Integer> instances =
-        IntStream.range(0, NUM_INSTANCES).boxed().collect(Collectors.toList());
-
-    TypeDescriptor<MonteCarloTreeSearch.TreeData> treeDatas =
-        new TypeDescriptor<MonteCarloTreeSearch.TreeData>() {};
-
-    p.apply(Create.of(instances))
-        .apply(
-            MapElements.into(treeDatas)
-                .via(MonteCarloTreeSearchExplorationPipeline::initialExpansion))
-        .apply(
-            Combine.globally(
-                (left, right) -> {
-                  left.merge(right);
-                  return left;
-                }))
-        .apply(
-            "Second Expansions",
-            FlatMapElements.into(BeamTypes.examples)
-                .via(MonteCarloTreeSearchExplorationPipeline::secondExpansion))
-        //        .apply(Reshuffle.viaRandomKey())
-        .apply(MapElements.into(BeamTypes.byteArrays).via(e -> e.toByteArray()))
-        //        .apply(
-        //            FileIO.<byte[]>write()
-        //                .via(TFRecordIO.sink())
-        //                .withNumShards(10)
-        ////                .withTempDirectory("/home/anarbek/tmp")
-        //                .to(OUTPUT));
-        .apply(TFRecordIO.write().withNumShards(10).to(OUTPUT));
+    run(p, options);
 
     p.run().waitUntilFinish();
-    //    flinkRunner.run(p).waitUntilFinish();
   }
 
-  public static MonteCarloTreeSearch.TreeData initialExpansion(int instance) {
-    System.out.println("Instance " + instance);
-    MonteCarloTreeSearch monteCarloTreeSearch =
-        new MonteCarloTreeSearch(GameSimulator.MINIMAX);
+  public static void run(Pipeline pipeline, ExplorationPipelineOptions options) {
+    List<Integer> instances =
+        IntStream.range(0, options.getNumSeeds()).boxed().collect(Collectors.toList());
 
-    for (int i = 0; i < NUM_EXPANSES; i++) {
-      monteCarloTreeSearch.expand();
-    }
-
-    System.out.println("Init instance expanded " + instance);
-    System.out.println(
-        "simulations "
-            + monteCarloTreeSearch
-                .getTreeData()
-                .getIndex()
-                .get(MonteCarloTreeSearch.ROOT_ID)
-                .getSimulations());
-    return monteCarloTreeSearch.getTreeData();
+    pipeline
+        .apply("Create Seed instances ", Create.of(instances))
+        .apply(
+            "Generate States",
+            MapElements.into(BeamTypes.stateProtos).via(i -> GameSimulator.randomState().toProto()))
+        .apply("Expand", ParDo.of(new ExpandFn()))
+        .apply(
+            "Enrich",
+            MapElements.into(BeamTypes.stateNodes)
+                .via(MonteCarloTreeSearchExplorationPipeline::enrich))
+        .apply(
+            "Encode",
+            MapElements.into(BeamTypes.examples)
+                .via(MonteCarloTreeSearchExplorationPipeline::encode))
+        .apply(MapElements.into(BeamTypes.byteArrays).via(Example::toByteArray))
+        .apply(
+            TFRecordIO.write()
+                .withNumShards(options.getNumOutputShards())
+                .to(options.getOutputPath()));
   }
 
-  public static List<Example> secondExpansion(final MonteCarloTreeSearch.TreeData treeData) {
-    MonteCarloTreeSearch.TreeData copy = new MonteCarloTreeSearch.TreeData(treeData);
-
-    MonteCarloTreeSearch monteCarloTreeSearch =
-        new MonteCarloTreeSearch(GameSimulator.MINIMAX, copy);
+  private static Example encode(final StateNode stateNode) {
     StateEncoder stateEncoder = new NormalizedStateEncoder();
 
-    //    for (int i = 0; i < NUM_EXPANSES; i++) {
-    monteCarloTreeSearch.expand();
-    //    }
+    return stateNode.toTFExample(stateEncoder);
+  }
 
-    System.out.println("SecondExpansion");
-    System.out.println(
-        "simulations "
-            + monteCarloTreeSearch
-                .getTreeData()
-                .getIndex()
-                .get(MonteCarloTreeSearch.ROOT_ID)
-                .getSimulations());
+  private static StateNode enrich(StateNode stateNode) {
+    GameSimulator gameSimulator = GameSimulator.MINIMAX;
+    StateNode enriched = new StateNode(new State(stateNode.getState()));
+    enriched.merge(stateNode);
+    if (enriched.getSimulations() < 10) {
+      SimulationResult simulationResult =
+          gameSimulator.playOut(enriched.getState(), 10 - enriched.getSimulations());
+      enriched.update(simulationResult);
+    }
 
-    return monteCarloTreeSearch.getTreeData().getIndex().values().stream()
-        .map(node -> node.toTFExample(stateEncoder))
-        .collect(Collectors.toList());
+    return enriched;
+  }
+
+  public interface ExplorationPipelineOptions extends PipelineOptions {
+    @Description("Path of the output files")
+    @Default.String("/home/anarbek/tmp/min_max/training_4_100.tfrecord")
+    String getOutputPath();
+
+    void setOutputPath(String value);
+
+    @Description("# shards in the output")
+    @Default.Integer(4)
+    int getNumOutputShards();
+
+    void setNumOutputShards(int value);
+
+    @Description("# of Monte Carlo Tree Search expanses")
+    @Default.Integer(4)
+    int getNumExpanses();
+
+    void setNumExpanses(int value);
+
+    @Description("# of seeds")
+    @Default.Integer(5)
+    int getNumSeeds();
+
+    void setNumSeeds(int value);
+  }
+
+  public static class ExpandFn extends DoFn<Game.StateProto, StateNode> {
+    @ProcessElement
+    public void process(
+            ProcessContext context, @Element Game.StateProto root, OutputReceiver<StateNode> out) {
+
+      int numExpanses =
+              context.getPipelineOptions().as(ExplorationPipelineOptions.class).getNumExpanses();
+
+      MonteCarloTreeSearch monteCarloTreeSearch =
+              new MonteCarloTreeSearch(
+                      GameSimulator.MINIMAX, new MonteCarloTreeSearch.TreeData(), new State(root));
+
+      for (int i = 0; i < numExpanses; i++) {
+        monteCarloTreeSearch.expand();
+      }
+
+      monteCarloTreeSearch.getTreeData().getIndex().values().forEach(out::output);
+    }
   }
 }

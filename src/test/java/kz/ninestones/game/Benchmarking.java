@@ -3,7 +3,7 @@ package kz.ninestones.game;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import kz.ninestones.game.learning.evaluation.TensforFlowStateEvaluator;
+import kz.ninestones.game.learning.evaluation.TensorFlowStateEvaluator;
 import kz.ninestones.game.learning.montecarlo.TreeSearch;
 import kz.ninestones.game.modeling.strategy.SampledMoveStrategy;
 import kz.ninestones.game.modeling.strategy.Strategy;
@@ -43,7 +43,7 @@ public class Benchmarking {
       //      treeSearch = new TreeSearch(new MinMaxMonteCarloPlayOutSimulator());
       //      this.strategy = new MatrixMinMaxStrategy(new ScoreDiffStateEvaluator());
       //      this.strategy = new RecursiveMinMax(new ScoreDiffStateEvaluator());
-      this.strategy = new SampledMoveStrategy(new TensforFlowStateEvaluator());
+      this.strategy = new SampledMoveStrategy(new TensorFlowStateEvaluator());
       this.gameStates =
           IntStream.rangeClosed(1, 100)
               .mapToObj(i -> GameSimulator.randomState())

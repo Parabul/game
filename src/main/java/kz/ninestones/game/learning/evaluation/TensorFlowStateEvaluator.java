@@ -13,17 +13,17 @@ import org.tensorflow.ndarray.Shape;
 import org.tensorflow.ndarray.buffer.DataBuffers;
 import org.tensorflow.types.TFloat32;
 
-public class TensforFlowStateEvaluator implements StateEvaluator {
+public class TensorFlowStateEvaluator implements StateEvaluator {
 
   private final SavedModelBundle model;
   private final StateEncoder stateEncoder;
   private final Session session;
 
-  public TensforFlowStateEvaluator() {
-    this.model = SavedModelBundle.load("/mnt/nfs/models/min_max/stable", "serve");
+  public TensorFlowStateEvaluator() {
+    this.model = SavedModelBundle.load("/home/anarbek/tmp/model/demo", "serve");
     this.session = model.session();
     this.stateEncoder = new NormalizedStateEncoder();
-    System.out.println("modelPath: /mnt/nfs/models/min_max/stable");
+    System.out.println("modelPath: /home/anarbek/tmp/model/demo");
   }
 
   @Override

@@ -1,7 +1,6 @@
 package kz.ninestones.game.modeling.strategy;
 
 import kz.ninestones.game.learning.evaluation.ScoreDiffStateEvaluator;
-import kz.ninestones.game.learning.evaluation.TensforFlowStateEvaluator;
 
 public class Strategies {
 
@@ -15,6 +14,6 @@ public class Strategies {
 
   public static final Strategy MAX_SCORE_DIFF = new MaxStrategy(new ScoreDiffStateEvaluator());
 
-  public static final Strategy TENSOR_FLOW =
-      new MatrixMinMaxStrategy(new TensforFlowStateEvaluator());
+  public static final Strategy TENSOR_FLOW =  new MaxStrategy(new ScoreDiffStateEvaluator());
+//      new MatrixMinMaxStrategy(new TensforFlowStateEvaluator());
 }

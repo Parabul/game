@@ -14,10 +14,6 @@ import kz.ninestones.game.utils.MathUtils;
 
 public class MonteCarloTreeSearch {
 
-  private static final State ROOT = new State();
-
-  public static final String ROOT_ID = ROOT.getId();
-
   private static final int NUM_SIMULATIONS = 1;
   private static final double EXPLORATION_WEIGHT = Math.sqrt(2);
 
@@ -25,23 +21,33 @@ public class MonteCarloTreeSearch {
 
   private final TreeData treeData;
 
+  public String getRootId() {
+    return rootId;
+  }
+
+  private final String rootId;
+
   public MonteCarloTreeSearch(GameSimulator gameSimulator) {
     this(gameSimulator, new TreeData());
   }
 
   public MonteCarloTreeSearch(GameSimulator gameSimulator, TreeData treeData) {
+    this(gameSimulator, treeData, new State());
+  }
+
+  public MonteCarloTreeSearch(GameSimulator gameSimulator, TreeData treeData, State rootState) {
     this.gameSimulator = gameSimulator;
     this.treeData = treeData;
-    this.treeData.index.putIfAbsent(ROOT_ID, new StateNode(ROOT));
+    this.rootId = rootState.getId();
+    this.treeData.index.putIfAbsent(rootId, new StateNode(rootState));
   }
 
   public void expand() {
-    StateNode currentNode = this.treeData.index.get(ROOT_ID);
+    StateNode currentNode = this.treeData.index.get(rootId);
 
     Stack<NodeStats> backProgagationStack = new Stack<>();
 
     while (!Policy.isGameOver(currentNode.getState())) {
-      //      System.out.println(currentNode.getState());
 
       String currentNodeId = currentNode.getState().getId();
 

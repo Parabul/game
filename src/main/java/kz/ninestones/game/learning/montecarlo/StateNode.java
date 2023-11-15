@@ -4,6 +4,8 @@ import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.stream.Collectors;
+
+import com.google.common.base.Objects;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.learning.encode.StateEncoder;
@@ -82,5 +84,18 @@ public class StateNode implements Serializable {
                 .putFeature("input", TensorFlowUtils.floatList(input))
                 .putFeature("output", TensorFlowUtils.floatList(output)))
         .build();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    StateNode stateNode = (StateNode) o;
+    return Objects.equal(state, stateNode.state) && Objects.equal(observedOutcomes, stateNode.observedOutcomes);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(state, observedOutcomes);
   }
 }

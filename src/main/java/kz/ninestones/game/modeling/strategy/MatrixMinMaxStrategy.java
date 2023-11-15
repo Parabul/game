@@ -61,7 +61,7 @@ public class MatrixMinMaxStrategy implements Strategy {
       }
     }
 
-    return ModelUtils.firstMaximizingKey(minimumOutcomes);
+    return ModelUtils.anyMaximizingKey(minimumOutcomes);
   }
 
 

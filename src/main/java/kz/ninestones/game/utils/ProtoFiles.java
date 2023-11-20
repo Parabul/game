@@ -1,4 +1,4 @@
-package kz.ninestones.game.persistence;
+package kz.ninestones.game.utils;
 
 import com.google.protobuf.Message;
 import java.io.*;

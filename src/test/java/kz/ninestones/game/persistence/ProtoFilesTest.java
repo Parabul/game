@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.proto.Game;
 import kz.ninestones.game.simulation.GameSimulator;
+import kz.ninestones.game.utils.ProtoFiles;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

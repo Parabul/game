@@ -88,7 +88,7 @@ public class GameSimulatorService extends GameSimulatorGrpc.GameSimulatorImplBas
 
     responseObserver.onNext(
         Game.SuggestionResponse.newBuilder()
-            .setMove(Strategies.FIRST_ALLOWED_MOVE.suggestNextMove(state))
+            .setMove(Strategies.TENSOR_FLOW.suggestNextMove(state))
             .build());
     responseObserver.onCompleted();
   }

@@ -1,7 +1,5 @@
 package kz.ninestones.game.learning.montecarlo;
 
-import com.google.common.collect.ArrayListMultimap;
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -21,29 +19,21 @@ public class MonteCarloTreeSearch {
 
   private final TreeData treeData;
 
-  public String getRootId() {
-    return rootId;
-  }
-
   private final String rootId;
 
   public MonteCarloTreeSearch(GameSimulator gameSimulator) {
-    this(gameSimulator, new TreeData());
-  }
-
-  public MonteCarloTreeSearch(GameSimulator gameSimulator, TreeData treeData) {
-    this(gameSimulator, treeData, new State());
+    this(gameSimulator, new TreeData(), new State());
   }
 
   public MonteCarloTreeSearch(GameSimulator gameSimulator, TreeData treeData, State rootState) {
     this.gameSimulator = gameSimulator;
     this.treeData = treeData;
     this.rootId = rootState.getId();
-    this.treeData.index.putIfAbsent(rootId, new StateNode(rootState));
+    this.treeData.getIndex().putIfAbsent(rootId, new StateNode(rootState));
   }
 
   public void expand() {
-    StateNode currentNode = this.treeData.index.get(rootId);
+    StateNode currentNode = this.treeData.getIndex().get(rootId);
 
     Stack<NodeStats> backProgagationStack = new Stack<>();
 
@@ -51,13 +41,13 @@ public class MonteCarloTreeSearch {
 
       String currentNodeId = currentNode.getState().getId();
 
-      if (!this.treeData.parentToChild.containsKey(currentNodeId)) {
+      if (!this.treeData.getParentToChild().containsKey(currentNodeId)) {
         initChildren(currentNode, currentNodeId);
       }
 
       List<StateNode> childNodes =
-          this.treeData.parentToChild.get(currentNodeId).stream()
-              .map(this.treeData.index::get)
+          this.treeData.getParentToChild().get(currentNodeId).stream()
+              .map(this.treeData.getIndex()::get)
               .collect(Collectors.toList());
 
       SimulationResult simulationResultToPropagate = new SimulationResult();
@@ -111,8 +101,8 @@ public class MonteCarloTreeSearch {
             move -> {
               State childState = Policy.makeMove(parentState, move);
               String childStateId = childState.getId();
-              this.treeData.index.putIfAbsent(childStateId, new StateNode(childState));
-              this.treeData.parentToChild.put(stateId, childStateId);
+              this.treeData.getIndex().putIfAbsent(childStateId, new StateNode(childState));
+              this.treeData.getParentToChild().put(stateId, childStateId);
             });
   }
 
@@ -127,36 +117,6 @@ public class MonteCarloTreeSearch {
     NodeStats(StateNode node, SimulationResult simulationResult) {
       this.node = node;
       this.simulationResult = simulationResult;
-    }
-  }
-
-  public static class TreeData implements Serializable {
-    private final Map<String, StateNode> index;
-
-    private final ArrayListMultimap<String, String> parentToChild;
-
-    public TreeData(){
-      index = new HashMap<>();
-      parentToChild  = ArrayListMultimap.create();
-    }
-
-    public TreeData(TreeData other){
-      index = new HashMap<>();
-      other.index.forEach((key, value) -> index.put(key, new StateNode(value)));
-      parentToChild  = ArrayListMultimap.create(other.parentToChild);
-    }
-
-    public void merge(TreeData other) {
-      other.getIndex().forEach((key, value) -> this.index.merge(key, value, (o, n) -> o.merge(n)));
-      this.parentToChild.putAll(other.parentToChild);
-    }
-
-    public Map<String, StateNode> getIndex() {
-      return index;
-    }
-
-    public ArrayListMultimap<String, String> getParentToChild() {
-      return parentToChild;
     }
   }
 }

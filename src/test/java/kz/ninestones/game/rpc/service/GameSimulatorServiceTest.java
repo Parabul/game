@@ -88,7 +88,7 @@ public class GameSimulatorServiceTest {
         suggestionResponseObserver);
 
     verify(suggestionResponseObserver)
-        .onNext(Mockito.eq(Game.SuggestionResponse.newBuilder().setMove(1).build()));
+        .onNext(Mockito.eq(Game.SuggestionResponse.newBuilder().setMove(8).build()));
 
     verify(suggestionResponseObserver).onCompleted();
   }

@@ -8,6 +8,7 @@ import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
 import kz.ninestones.game.learning.encode.StateEncoder;
 import kz.ninestones.game.learning.montecarlo.MonteCarloTreeSearch;
 import kz.ninestones.game.learning.montecarlo.StateNode;
+import kz.ninestones.game.learning.montecarlo.TreeData;
 import kz.ninestones.game.proto.Game;
 import kz.ninestones.game.simulation.GameSimulator;
 import kz.ninestones.game.simulation.SimulationResult;
@@ -67,7 +68,7 @@ public class MonteCarloTreeSearchExplorationPipeline {
 
   private static StateNode enrich(StateNode stateNode) {
     GameSimulator gameSimulator = GameSimulator.MINIMAX;
-    StateNode enriched = new StateNode(new State(stateNode.getState()));
+    StateNode enriched = new StateNode(stateNode.getState());
     enriched.merge(stateNode);
     if (enriched.getSimulations() < 10) {
       SimulationResult simulationResult =
@@ -107,14 +108,14 @@ public class MonteCarloTreeSearchExplorationPipeline {
   public static class ExpandFn extends DoFn<Game.StateProto, StateNode> {
     @ProcessElement
     public void process(
-            ProcessContext context, @Element Game.StateProto root, OutputReceiver<StateNode> out) {
+        ProcessContext context, @Element Game.StateProto root, OutputReceiver<StateNode> out) {
 
       int numExpanses =
-              context.getPipelineOptions().as(ExplorationPipelineOptions.class).getNumExpanses();
+          context.getPipelineOptions().as(ExplorationPipelineOptions.class).getNumExpanses();
 
       MonteCarloTreeSearch monteCarloTreeSearch =
-              new MonteCarloTreeSearch(
-                      GameSimulator.MINIMAX, new MonteCarloTreeSearch.TreeData(), new State(root));
+          new MonteCarloTreeSearch(
+              GameSimulator.MINIMAX, new TreeData(), new State(root));
 
       for (int i = 0; i < numExpanses; i++) {
         monteCarloTreeSearch.expand();

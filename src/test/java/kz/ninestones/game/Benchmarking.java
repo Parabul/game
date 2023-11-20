@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import kz.ninestones.game.learning.evaluation.TensorFlowStateEvaluator;
-import kz.ninestones.game.learning.montecarlo.TreeSearch;
 import kz.ninestones.game.modeling.strategy.SampledMoveStrategy;
 import kz.ninestones.game.modeling.strategy.Strategy;
 import kz.ninestones.game.simulation.GameSimulator;
@@ -34,7 +33,6 @@ public class Benchmarking {
   @State(Scope.Benchmark)
   public static class ExecutionPlan {
 
-    public TreeSearch treeSearch;
     private Strategy strategy;
     private List<kz.ninestones.game.core.State> gameStates;
 

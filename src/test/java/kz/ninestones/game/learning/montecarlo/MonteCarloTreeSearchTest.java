@@ -20,8 +20,6 @@ public class MonteCarloTreeSearchTest {
 
     StateNode rootNew = monteCarloTreeSearchNew.getTreeData().getIndex().get((new State()).getId());
 
-    System.out.println(rootNew.getObservedOutcomes());
-
     assertThat(1.0 * rootNew.getObservedOutcomes().get(Player.ONE) / rootNew.getSimulations())
         .isWithin(0.1)
         .of(0.5);

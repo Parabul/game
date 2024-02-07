@@ -47,8 +47,6 @@ public class RecursiveMinMax implements Strategy {
 
 
 
-  // Returns optimal move and it's value for current player (Initially called for root and
-  // maximizer)
   public Pair<Integer, Double> minimax(
       int depth, int move, State state, Player maximizingPlayer, double alpha, double beta) {
 
@@ -59,7 +57,7 @@ public class RecursiveMinMax implements Strategy {
     Pair<Integer, Double> optimalMove = null;
     Map<Integer, State> childStates = getChildStates(state);
 
-    if (maximizingPlayer.equals(state.nextMove)) {
+    if (maximizingPlayer.equals(state.getNextMove())) {
       for (Map.Entry<Integer, State> childState : childStates.entrySet()) {
         Pair<Integer, Double> alternative =
             minimax(
@@ -104,7 +102,7 @@ public class RecursiveMinMax implements Strategy {
 
   @Override
   public int suggestNextMove(State state) {
-    return minimax(0, 0, state, state.nextMove, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
+    return minimax(0, 0, state, state.getNextMove(), Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
         .getKey();
   }
 }

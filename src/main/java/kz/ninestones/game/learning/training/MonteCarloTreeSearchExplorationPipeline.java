@@ -28,36 +28,34 @@ public class MonteCarloTreeSearchExplorationPipeline {
     ExplorationPipelineOptions options =
         PipelineOptionsFactory.fromArgs(args).withValidation().as(ExplorationPipelineOptions.class);
 
-    Pipeline p = Pipeline.create(options);
+    Pipeline pipeline = Pipeline.create(options);
 
-    run(p, options);
-
-    p.run().waitUntilFinish();
-  }
-
-  public static void run(Pipeline pipeline, ExplorationPipelineOptions options) {
     List<Integer> instances =
         IntStream.range(0, options.getNumSeeds()).boxed().collect(Collectors.toList());
 
     pipeline
-        .apply("Create Seed instances ", Create.of(instances))
+        .apply("Create seeds", Create.of(instances))
         .apply(
-            "Generate States",
+            "Generate Random Game States",
             MapElements.into(BeamTypes.stateProtos).via(i -> GameSimulator.randomState().toProto()))
-        .apply("Expand", ParDo.of(new ExpandFn()))
+        .apply("Expand Monte Carlo Search Tree", ParDo.of(new ExpandFn()))
         .apply(
-            "Enrich",
+            "Enrich Less Visited Nodes",
             MapElements.into(BeamTypes.stateNodes)
                 .via(MonteCarloTreeSearchExplorationPipeline::enrich))
         .apply(
-            "Encode",
+            "Encode As TensorFlow Example",
             MapElements.into(BeamTypes.examples)
                 .via(MonteCarloTreeSearchExplorationPipeline::encode))
-        .apply(MapElements.into(BeamTypes.byteArrays).via(Example::toByteArray))
         .apply(
+            "Map To ByteArrays", MapElements.into(BeamTypes.byteArrays).via(Example::toByteArray))
+        .apply(
+            "Write TFRecords",
             TFRecordIO.write()
                 .withNumShards(options.getNumOutputShards())
                 .to(options.getOutputPath()));
+
+    pipeline.run().waitUntilFinish();
   }
 
   private static Example encode(final StateNode stateNode) {
@@ -114,8 +112,7 @@ public class MonteCarloTreeSearchExplorationPipeline {
           context.getPipelineOptions().as(ExplorationPipelineOptions.class).getNumExpanses();
 
       MonteCarloTreeSearch monteCarloTreeSearch =
-          new MonteCarloTreeSearch(
-              GameSimulator.MINIMAX, new TreeData(), new State(root));
+          new MonteCarloTreeSearch(GameSimulator.MINIMAX, new TreeData(), new State(root));
 
       for (int i = 0; i < numExpanses; i++) {
         monteCarloTreeSearch.expand();

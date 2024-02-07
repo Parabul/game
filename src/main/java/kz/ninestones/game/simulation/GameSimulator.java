@@ -14,10 +14,11 @@ import kz.ninestones.game.modeling.strategy.Strategy;
 
 public class GameSimulator {
 
-  public static final GameSimulator RANDOM_VS_RANDOM= new GameSimulator(Strategies.RANDOM, Strategies.RANDOM);
+  public static final GameSimulator RANDOM_VS_RANDOM =
+      new GameSimulator(Strategies.RANDOM, Strategies.RANDOM);
 
-  public static final GameSimulator MINIMAX= new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.MIN_MAX_SCORE_DIFF);
-
+  public static final GameSimulator MINIMAX =
+      new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.MIN_MAX_SCORE_DIFF);
 
   public static final GameSimulator DETEMINISTIC =
       new GameSimulator(Strategies.FIRST_ALLOWED_MOVE, Strategies.FIRST_ALLOWED_MOVE);
@@ -31,14 +32,12 @@ public class GameSimulator {
   }
 
   public static State randomState() {
-
     State state = new State();
+    RandomMoveStrategy moveStrategy = new RandomMoveStrategy();
 
     int steps = ThreadLocalRandom.current().nextInt(10);
 
-    RandomMoveStrategy moveStrategy = new RandomMoveStrategy();
-
-    for(int i =0;i < steps; i++){
+    for (int i = 0; i < steps; i++) {
       int move = moveStrategy.suggestNextMove(state);
       state = Policy.makeMove(state, move);
     }
@@ -57,7 +56,7 @@ public class GameSimulator {
 
       states.add(state);
 
-      int move = models.get(state.nextMove).suggestNextMove(state);
+      int move = models.get(state.getNextMove()).suggestNextMove(state);
 
       state = Policy.makeMove(state, move);
     }
@@ -73,7 +72,7 @@ public class GameSimulator {
 
     while (!Policy.isGameOver(state)) {
 
-      int move = models.get(state.nextMove).suggestNextMove(state);
+      int move = models.get(state.getNextMove()).suggestNextMove(state);
 
       state = Policy.makeMove(state, move);
     }

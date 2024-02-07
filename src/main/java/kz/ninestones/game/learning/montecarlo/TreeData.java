@@ -1,7 +1,6 @@
 package kz.ninestones.game.learning.montecarlo;
 
 import com.google.common.collect.ArrayListMultimap;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +22,7 @@ public class TreeData implements Serializable {
   }
 
   public void merge(TreeData other) {
-    other.getIndex().forEach((key, value) -> this.index.merge(key, value, (o, n) -> o.merge(n)));
+    other.getIndex().forEach((key, value) -> this.index.merge(key, value, StateNode::merge));
     this.parentToChild.putAll(other.parentToChild);
   }
 

@@ -15,6 +15,6 @@ public class ScoreStateEvaluator implements StateEvaluator {
       return winner.isPresent() && winner.get().equals(player) ? 1 : 0;
     }
 
-    return state.score.get(player) > 81 ? 1.0 : state.score.get(player) / 82.0;
+    return state.getScore().get(player) > 81 ? 1.0 : state.getScore().get(player) / 82.0;
   }
 }

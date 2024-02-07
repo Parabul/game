@@ -1,11 +1,9 @@
 package kz.ninestones.game.learning.montecarlo;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.EnumMap;
-import java.util.stream.Collectors;
-
-import com.google.common.base.Objects;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.learning.encode.StateEncoder;
@@ -20,7 +18,7 @@ public class StateNode implements Serializable {
 
   public StateNode(State state) {
     this.state = state;
-    observedOutcomes = new EnumMap(Player.class);
+    observedOutcomes = new EnumMap<>(Player.class);
     for (Player player : Player.values()) {
       observedOutcomes.put(player, 0);
     }
@@ -55,7 +53,7 @@ public class StateNode implements Serializable {
   }
 
   public long getSimulations() {
-    return observedOutcomes.values().stream().collect(Collectors.summingInt(Integer::intValue));
+    return observedOutcomes.values().stream().mapToInt(Integer::intValue).sum();
   }
 
   @Override
@@ -91,7 +89,8 @@ public class StateNode implements Serializable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     StateNode stateNode = (StateNode) o;
-    return Objects.equal(state, stateNode.state) && Objects.equal(observedOutcomes, stateNode.observedOutcomes);
+    return Objects.equal(state, stateNode.state)
+        && Objects.equal(observedOutcomes, stateNode.observedOutcomes);
   }
 
   @Override

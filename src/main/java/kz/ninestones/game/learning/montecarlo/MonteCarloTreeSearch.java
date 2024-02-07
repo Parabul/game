@@ -62,8 +62,7 @@ public class MonteCarloTreeSearch {
 
       final long simulations =
           currentNode.getSimulations()
-              + simulationResultToPropagate.getObservedWinners().values().stream()
-                  .collect(Collectors.summingInt(Integer::intValue));
+              + simulationResultToPropagate.getObservedWinners().values().stream().mapToInt(Integer::intValue).sum();
 
       currentNode =
           Collections.max(childNodes, Comparator.comparing(node -> getWeight(simulations, node)));
@@ -79,7 +78,7 @@ public class MonteCarloTreeSearch {
 
   private Double getWeight(long parentSimulations, StateNode childNode) {
     long childNodeSimulations = childNode.getSimulations();
-    Player nextMovePlayer = childNode.getState().nextMove.opponent;
+    Player nextMovePlayer = childNode.getState().getNextMove().opponent;
 
     double exploration =
         (parentSimulations > 0 && childNodeSimulations > 0)

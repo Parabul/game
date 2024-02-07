@@ -13,8 +13,6 @@ public class Strategies {
   public static final Strategy DEEP_MIN_MAX_SCORE_DIFF =
       new RecursiveMinMax(new ScoreDiffStateEvaluator(), 4);
 
-  public static final Strategy MAX_SCORE_DIFF = new MaxStrategy(new ScoreDiffStateEvaluator());
-
   public static final Strategy TENSOR_FLOW = // new MaxStrategy(new ScoreDiffStateEvaluator());
           new RecursiveMinMax(new TensorFlowStateEvaluator(), 4);
 }

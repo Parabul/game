@@ -14,8 +14,8 @@ public class NormalizedStateEncoder implements StateEncoder {
   private static final int NUM_FEATURES = 39;
 
   public float[] encodeSpecialCells(State state) {
-    int playerOneSpecial = state.specialCells.getOrDefault(Player.ONE, -1);
-    int playerTwoSpecial = state.specialCells.getOrDefault(Player.TWO, -1);
+    int playerOneSpecial = state.getSpecialCells().getOrDefault(Player.ONE, -1);
+    int playerTwoSpecial = state.getSpecialCells().getOrDefault(Player.TWO, -1);
     return Floats.concat(encodeSpecialCell(playerOneSpecial), encodeSpecialCell(playerTwoSpecial));
   }
 
@@ -31,20 +31,22 @@ public class NormalizedStateEncoder implements StateEncoder {
   public float[] encode(State state) {
     // 2 X 9 (cells) + 2 X 8 (special cell) + 2 X 1 (score) + 1 (nextMove)
 
-    float sum = (float) Arrays.stream(state.cells).sum();
+    float sum = (float) Arrays.stream(state.getCells()).sum();
 
-    float[] cells = new float[state.cells.length];
+    float[] cells = new float[state.getCells().length];
 
-    for (int i = 0; i < state.cells.length; i++) {
-      cells[i] = state.cells[i] / sum;
+    for (int i = 0; i < state.getCells().length; i++) {
+      cells[i] = state.getCells()[i] / sum;
     }
 
     float[] scores =
-        new float[] {state.score.get(Player.ONE) / 82.0f, state.score.get(Player.TWO) / 82.0f};
+        new float[] {
+          state.getScore().get(Player.ONE) / 82.0f, state.getScore().get(Player.TWO) / 82.0f
+        };
 
     float[] specialCells = encodeSpecialCells(state);
 
-    float[] nextMove = new float[] {(float) state.nextMove.ordinal()};
+    float[] nextMove = new float[] {(float) state.getNextMove().ordinal()};
     return Floats.concat(cells, specialCells, scores, nextMove);
   }
 }

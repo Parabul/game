@@ -2,43 +2,25 @@ package kz.ninestones.game.simulation;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.hash.BloomFilter;
-import java.io.IOException;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.core.State.StateFunnel;
 import kz.ninestones.game.modeling.strategy.Strategies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoadRunner {
-  public static void main(String[] args) throws IOException {
-    //    run(1);
+  private static final Logger logger = LoggerFactory.getLogger(LoadRunner.class);
+
+  public static void main(String[] args) {
     run(10);
-    run(100);
-    //  run(1000);
-    //   run(100000);
   }
 
-  public static void run(int times) throws IOException {
-    System.out.println("-----");
-    System.out.println(times);
+  public static void run(int times) {
 
-    //    StateEvaluator diffStateEvaluator = new ScoreDiffStateEvaluator();
-    //    StateEvaluator firstNeuralNetEvaluator = new NeuralNetStateEvaluator(
-    //        "/home/anarbek/projects/ninestones/models/3.3.model");
-    //    StateEvaluator secondNeuralNetEvaluator = new NeuralNetStateEvaluator(
-    //        "/home/anarbek/projects/ninestones/models/3.1.model");
-    //
-    //    StateEvaluator secondModel = new NeuralNetStateEvaluator(
-    //        "/home/anarbek/projects/ninestones/models/second.model");
-    //
-    //    Strategy minMaxScore = new MatrixMinMaxStrategy(diffStateEvaluator);
-    //
-    //    Strategy minMaxFirstNet = new MatrixMinMaxStrategy(new NeuralNetStateEvaluator(
-    //        "/home/anarbek/projects/ninestones/models/3.3.model"));
-    //    Strategy minMaxSecondNet = new MatrixMinMaxStrategy(secondNeuralNetEvaluator);
-    //    Strategy minMaxFirstModelNet = new MatrixMinMaxStrategy(secondModel);
-
-    GameSimulator simulator = new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.TENSOR_FLOW);
+    GameSimulator simulator =
+        new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.TENSOR_FLOW);
 
     int playerOneWon = 0;
     int playerTwoWon = 0;
@@ -46,12 +28,10 @@ public class LoadRunner {
 
     BloomFilter<State> bloomFilter = BloomFilter.create(StateFunnel.INSTANCE, 20000000, 0.0001);
 
-    System.out.println();
-    System.out.println("init complete");
     Stopwatch watch = Stopwatch.createStarted();
 
     for (int i = 0; i < times; i++) {
-      System.out.println("i: " + i);
+      logger.info("step: " + i);
       RecordedGame recordedGame = simulator.recordedPlayOut(GameSimulator.randomState());
 
       if (Player.ONE.equals(recordedGame.getWinner())) {
@@ -66,14 +46,14 @@ public class LoadRunner {
 
     watch.stop();
 
-    System.out.println("Stopwatch: " + watch);
-    System.out.println("Score " + playerOneWon + " : " + playerTwoWon);
-    System.out.println("Draws " + (times - playerOneWon - playerTwoWon));
+    logger.info("Stopwatch: " + watch);
+    logger.info("Score " + playerOneWon + " : " + playerTwoWon);
+    logger.info("Draws " + (times - playerOneWon - playerTwoWon));
 
-    System.out.println(
+    logger.info(
         "Approximate unique states per game: "
             + 1.0 * bloomFilter.approximateElementCount() / times);
-    System.out.println("Average # of steps per game: " + 1.0 * totalSteps / times);
+    logger.info("Average # of steps per game: " + 1.0 * totalSteps / times);
   }
 }
 

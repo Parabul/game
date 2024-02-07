@@ -23,12 +23,10 @@ public class TensorFlowStateEvaluator implements StateEvaluator {
     this.model = SavedModelBundle.load("/home/anarbek/tmp/model/demo", "serve");
     this.session = model.session();
     this.stateEncoder = new NormalizedStateEncoder();
-    System.out.println("modelPath: /home/anarbek/tmp/model/demo");
   }
 
   @Override
   public double evaluate(State state, Player player) {
-
     FloatNdArray val = NdArrays.wrap(Shape.of(1, 39), DataBuffers.of(stateEncoder.encode(state)));
 
     TFloat32 input = TFloat32.tensorOf(val);

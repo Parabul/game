@@ -19,39 +19,39 @@ import kz.ninestones.game.proto.Game;
 
 public class State implements Serializable {
 
-  // 0-8  player one
-  // 9-17 player two
-  public final int[] cells;
-  public final EnumMap<Player, Integer> score;
   // -1 special cell not set
   // For ONE possible range: [9-17]
   // For TWO possible range: [0-8]
-  public final EnumMap<Player, Integer> specialCells;
-  public final Player nextMove;
+  /*package private */ final EnumMap<Player, Integer> specialCells;
+  /*package private */ final Player nextMove;
+  // 0-8  player one
+  // 9-17 player two
+  /*package private */ final int[] cells;
+  /*package private */ EnumMap<Player, Integer> score;
 
   public State() {
     cells = new int[18];
     Arrays.fill(cells, 9);
 
-    score = new EnumMap(Player.class);
+    score = new EnumMap<>(Player.class);
     score.put(Player.ONE, 0);
     score.put(Player.TWO, 0);
-    specialCells = new EnumMap(Player.class);
+    specialCells = new EnumMap<>(Player.class);
 
     nextMove = Player.ONE;
   }
 
   public State(State original) {
     cells = Arrays.copyOf(original.cells, original.cells.length);
-    score = new EnumMap(original.score);
-    specialCells = new EnumMap(original.specialCells);
+    score = new EnumMap<>(original.score);
+    specialCells = new EnumMap<>(original.specialCells);
     nextMove = original.nextMove;
   }
 
   public State(State original, Player nextMove) {
     cells = Arrays.copyOf(original.cells, original.cells.length);
-    score = new EnumMap(original.score);
-    specialCells = new EnumMap(original.specialCells);
+    score = new EnumMap<>(original.score);
+    specialCells = new EnumMap<>(original.specialCells);
     this.nextMove = nextMove;
   }
 
@@ -85,11 +85,11 @@ public class State implements Serializable {
       this.cells[cellValue.getKey()] = cellValue.getValue();
     }
 
-    this.score = new EnumMap(score);
+    this.score = new EnumMap<>(score);
     if (specialCells.isEmpty()) {
-      this.specialCells = new EnumMap(Player.class);
+      this.specialCells = new EnumMap<>(Player.class);
     } else {
-      this.specialCells = new EnumMap(specialCells);
+      this.specialCells = new EnumMap<>(specialCells);
     }
 
     this.nextMove = nextMove;
@@ -103,17 +103,17 @@ public class State implements Serializable {
     checkArgument(
         state.getScoreCount() == 2, "Scores should have length 2, but %s", state.getScoreCount());
     score =
-        new EnumMap(
+        new EnumMap<>(
             BiStream.from(state.getScoreMap()).mapKeys(player -> Player.valueOf(player)).toMap());
 
     if (state.getSpecialCellsCount() > 0) {
       specialCells =
-          new EnumMap(
+          new EnumMap<>(
               BiStream.from(state.getSpecialCellsMap())
                   .mapKeys(player -> Player.valueOf(player))
                   .toMap());
     } else {
-      specialCells = new EnumMap(Player.class);
+      specialCells = new EnumMap<>(Player.class);
     }
 
     checkArgument(!state.getNextMove().equals(Game.PlayerProto.NONE), "Player is not set");
@@ -223,6 +223,22 @@ public class State implements Serializable {
 
   public HashCode getHashCode() {
     return Hashing.sha384().newHasher().putObject(this, StateFunnel.INSTANCE).hash();
+  }
+
+  public EnumMap<Player, Integer> getSpecialCells() {
+    return specialCells;
+  }
+
+  public Player getNextMove() {
+    return nextMove;
+  }
+
+  public int[] getCells() {
+    return cells;
+  }
+
+  public EnumMap<Player, Integer> getScore() {
+    return score;
   }
 
   public enum StateFunnel implements Funnel<State> {

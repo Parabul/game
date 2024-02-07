@@ -27,7 +27,7 @@ public class SampledMoveStrategy implements Strategy {
             .collect(
                 toImmutableMap(
                     identity(),
-                    move -> stateEvaluator.evaluate(Policy.makeMove(state, move), state.nextMove)));
+                    move -> stateEvaluator.evaluate(Policy.makeMove(state, move), state.getNextMove())));
 
     return ModelUtils.sampled(outcomes);
   }

@@ -15,7 +15,7 @@ public class ScoreDiffStateEvaluator implements StateEvaluator {
       return winner.isPresent() && winner.get().equals(player) ? 1 : 0;
     }
 
-    int diff = state.score.get(player) - state.score.get(player.opponent);
+    int diff = state.getScore().get(player) - state.getScore().get(player.opponent);
     if (diff > 81) {
       return 1;
     }

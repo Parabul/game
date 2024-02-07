@@ -1,9 +1,8 @@
-#Togyzkumalak Game (Training Data Pipeline)
+# Nine Pebbles (Togyzkumalak) Training Data Pipeline
 
-Policy, state evaluation, strategies, and simulation.
+The core package contains game state, policy, state evaluation, strategies, and simulation.
 
-The core of the Java package is Apache Beam pipeline that generates Monte Carlo Search Tree, the tree of most promissing moves and their outcomes:
-
+Provides Apache Beam pipeline that generates Monte Carlo Search Tree (the tree of most promissing moves and their outcomes):
 ```java
     ExplorationPipelineOptions options =
         PipelineOptionsFactory.fromArgs(args).withValidation().as(ExplorationPipelineOptions.class);

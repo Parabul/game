@@ -1,4 +1,4 @@
-package kz.ninestones.game.modeling.strategy;
+package kz.ninestones.game.strategy;
 
 import java.util.Arrays;
 import java.util.HashMap;

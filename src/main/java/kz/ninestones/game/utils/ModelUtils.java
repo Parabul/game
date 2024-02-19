@@ -9,7 +9,6 @@ import com.google.mu.util.stream.BiStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-import kz.ninestones.game.modeling.DistributionSampling;
 
 public class ModelUtils {
 
@@ -35,17 +34,11 @@ public class ModelUtils {
     double maxOutcome = Collections.max(outcomes.values());
 
     ImmutableList<Integer> maximizingMoves =
-            BiStream.from(outcomes)
-                    .filterValues(outcome -> DoubleMath.fuzzyEquals(outcome, maxOutcome, PRECISION))
-                    .keys()
-                    .collect(toImmutableList());
+        BiStream.from(outcomes)
+            .filterValues(outcome -> DoubleMath.fuzzyEquals(outcome, maxOutcome, PRECISION))
+            .keys()
+            .collect(toImmutableList());
 
     return maximizingMoves.get(0);
-  }
-
-  public static int sampled(Map<Integer, Double> outcomes) {
-    checkArgument(!outcomes.isEmpty(), "outcomes");
-
-    return (new DistributionSampling(outcomes)).getDistributedRandomNumber();
   }
 }

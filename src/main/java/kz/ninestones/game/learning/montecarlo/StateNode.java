@@ -64,9 +64,7 @@ public class StateNode implements Serializable {
         .toString();
   }
 
-  public Example toTFExample(final StateEncoder stateEncoder) {
-    float[] input = stateEncoder.encode(state);
-
+  public Example toTFExample(final StateEncoder stateEncoder, boolean direct) {
     long simulations = getSimulations();
 
     float[] output =
@@ -76,12 +74,14 @@ public class StateNode implements Serializable {
           1.0f * observedOutcomes.get(Player.NONE) / simulations
         };
 
-    return Example.newBuilder()
-        .setFeatures(
-            Features.newBuilder()
-                .putFeature("input", TensorFlowUtils.floatList(input))
-                .putFeature("output", TensorFlowUtils.floatList(output)))
-        .build();
+    Example.Builder ex =
+        Example.newBuilder()
+            .setFeatures(
+                Features.newBuilder().putFeature("output", TensorFlowUtils.floatList(output)));
+    stateEncoder
+        .featuresOf(state, direct)
+        .forEach((name, feature) -> ex.getFeaturesBuilder().putFeature(name, feature));
+    return ex.build();
   }
 
   @Override

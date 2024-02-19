@@ -1,4 +1,4 @@
-package kz.ninestones.game.modeling.strategy;
+package kz.ninestones.game.strategy;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

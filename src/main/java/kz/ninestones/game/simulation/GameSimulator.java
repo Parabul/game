@@ -8,17 +8,17 @@ import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.RecordedGame;
 import kz.ninestones.game.core.State;
-import kz.ninestones.game.modeling.strategy.RandomMoveStrategy;
-import kz.ninestones.game.modeling.strategy.Strategies;
-import kz.ninestones.game.modeling.strategy.Strategy;
+import kz.ninestones.game.strategy.RandomMoveStrategy;
+import kz.ninestones.game.strategy.Strategies;
+import kz.ninestones.game.strategy.Strategy;
 
 public class GameSimulator {
 
-  public static final GameSimulator RANDOM_VS_RANDOM =
+  public static final GameSimulator RANDOM =
       new GameSimulator(Strategies.RANDOM, Strategies.RANDOM);
 
   public static final GameSimulator MINIMAX =
-      new GameSimulator(Strategies.MIN_MAX_SCORE_DIFF, Strategies.MIN_MAX_SCORE_DIFF);
+      new GameSimulator(Strategies.MINIMAX_SCORE_DIFF, Strategies.MINIMAX_SCORE_DIFF);
 
   public static final GameSimulator DETEMINISTIC =
       new GameSimulator(Strategies.FIRST_ALLOWED_MOVE, Strategies.FIRST_ALLOWED_MOVE);

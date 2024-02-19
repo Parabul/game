@@ -1,4 +1,4 @@
-package kz.ninestones.game.modeling.strategy;
+package kz.ninestones.game.strategy;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;

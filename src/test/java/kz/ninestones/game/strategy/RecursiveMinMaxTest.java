@@ -1,13 +1,12 @@
 package kz.ninestones.game.modeling.strategy;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.google.common.truth.Truth;
 import java.util.ArrayList;
 import java.util.List;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.learning.evaluation.ScoreDiffStateEvaluator;
+import kz.ninestones.game.strategy.RecursiveMinMax;
 import org.junit.Test;
 
 public class RecursiveMinMaxTest {

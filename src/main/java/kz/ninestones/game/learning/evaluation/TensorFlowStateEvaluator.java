@@ -1,13 +1,15 @@
 package kz.ninestones.game.learning.evaluation;
 
+import java.util.List;
+import java.util.Map;
 import kz.ninestones.game.core.Player;
+import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
-import kz.ninestones.game.learning.encode.NormalizedStateEncoder;
+import kz.ninestones.game.learning.encode.DefaultStateEncoder;
 import kz.ninestones.game.learning.encode.StateEncoder;
-import org.tensorflow.Result;
 import org.tensorflow.SavedModelBundle;
 import org.tensorflow.Session;
-import org.tensorflow.ndarray.FloatNdArray;
+import org.tensorflow.example.Feature;
 import org.tensorflow.ndarray.NdArrays;
 import org.tensorflow.ndarray.Shape;
 import org.tensorflow.ndarray.buffer.DataBuffers;
@@ -15,32 +17,76 @@ import org.tensorflow.types.TFloat32;
 
 public class TensorFlowStateEvaluator implements StateEvaluator {
 
-  private final SavedModelBundle model;
+  public static final String OPERATION = "StatefulPartitionedCall:0";
+  public static final String FEED_KEY_MASK = "serving_default_%s:0";
+  private final String modelPath;
   private final StateEncoder stateEncoder;
-  private final Session session;
+
+  private final boolean direct;
+  private transient SavedModelBundle model;
+
+  public TensorFlowStateEvaluator(String modelPath, boolean direct) {
+    this.direct = direct;
+    this.modelPath = modelPath;
+    this.stateEncoder = new DefaultStateEncoder();
+  }
 
   public TensorFlowStateEvaluator() {
-    this.model = SavedModelBundle.load("/home/anarbek/tmp/model/demo", "serve");
-    this.session = model.session();
-    this.stateEncoder = new NormalizedStateEncoder();
+    this.modelPath = getClass().getClassLoader().getResource("models/incumbent/").getPath();
+    this.stateEncoder = new DefaultStateEncoder();
+    this.direct = false;
+  }
+
+  private static TFloat32 fromFeature(Feature feature) {
+    List<? extends Number> values;
+    if (feature.hasFloatList()) {
+      values = feature.getFloatList().getValueList();
+    } else if (feature.hasInt64List()) {
+      values = feature.getInt64List().getValueList();
+    } else {
+      throw new UnsupportedOperationException();
+    }
+
+    int n = values.size();
+    float[] floatArray = new float[n];
+
+    for (int i = 0; i < n; i++) {
+      floatArray[i] = values.get(i).floatValue();
+    }
+
+    return TFloat32.tensorOf(NdArrays.wrap(Shape.of(1, n), DataBuffers.of(floatArray)));
+  }
+
+  private synchronized SavedModelBundle getModel() {
+    if (model == null) {
+      model = SavedModelBundle.load(modelPath, "serve");
+    }
+    return model;
   }
 
   @Override
   public double evaluate(State state, Player player) {
-    FloatNdArray val = NdArrays.wrap(Shape.of(1, 39), DataBuffers.of(stateEncoder.encode(state)));
+    if (Policy.isGameOver(state)) {
+      return Policy.winnerOf(state).get().equals(player) ? 1.01 : 0;
+    }
 
-    TFloat32 input = TFloat32.tensorOf(val);
+    Map<String, Feature> features = stateEncoder.featuresOf(state, direct);
 
-    Result output =
-        session
-            .runner()
-            .feed("serving_default_input:0", input)
-            .fetch("StatefulPartitionedCall:0")
-            .run();
+    Session.Runner runner = getModel().session().runner();
 
-    double playerOneScore = output.get(0).asRawTensor().data().asFloats().getFloat(0);
-    double playerTwoScore = output.get(0).asRawTensor().data().asFloats().getFloat(1);
+    for (Map.Entry<String, Feature> featureByName : features.entrySet()) {
+      runner.feed(
+          String.format(FEED_KEY_MASK, featureByName.getKey()),
+          fromFeature(featureByName.getValue()));
+    }
 
-    return player.equals(Player.ONE) ? playerOneScore : playerTwoScore;
+    return runner
+        .fetch(OPERATION)
+        .run()
+        .get(0)
+        .asRawTensor()
+        .data()
+        .asFloats()
+        .getFloat(player.ordinal());
   }
 }

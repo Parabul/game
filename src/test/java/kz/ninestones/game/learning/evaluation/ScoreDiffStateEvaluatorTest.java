@@ -1,4 +1,4 @@
-package kz.ninestones.game.modeling;
+package kz.ninestones.game.learning.evaluation;
 
 import static com.google.common.truth.Truth.assertThat;
 

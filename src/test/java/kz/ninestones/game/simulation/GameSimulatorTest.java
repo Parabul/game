@@ -7,7 +7,7 @@ import java.util.Map;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
-import kz.ninestones.game.modeling.strategy.Strategies;
+import kz.ninestones.game.strategy.Strategies;
 import org.junit.Test;
 
 public class GameSimulatorTest {

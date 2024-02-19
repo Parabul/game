@@ -1,21 +1,12 @@
 package kz.ninestones.game.learning.encode;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.util.Map;
 import kz.ninestones.game.core.State;
+import org.tensorflow.example.Feature;
 
 public interface StateEncoder {
-
-  @VisibleForTesting
-  static float[] oneHot(int index) {
-    float[] encoding = new float[9];
-    if (index >= 0 && index < 9) encoding[index] = 1.0f;
-    return encoding;
-  }
-
-  float[] encode(State state);
-
-  @VisibleForTesting
-  float[] encodeSpecialCells(State state);
-
-  int numFeatures();
+  String INPUT = "input";
+  // If direct is true, the only feature returned is "input" (FloatList) - concatenation of the
+  // features.
+  Map<String, Feature> featuresOf(State state, boolean direct);
 }

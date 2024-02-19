@@ -1,0 +1,76 @@
+digraph {
+    rankdir=TB
+    subgraph cluster_0 {
+        label = ""
+        subgraph cluster_1 {
+            label = "Create seeds"
+            subgraph cluster_2 {
+                label = "Create seeds/Read(CreateSource)"
+                3 [label="Impulse"]
+                subgraph cluster_4 {
+                    label = "Create seeds/Read(CreateSource)/ParDo(OutputSingleSource)"
+                    5 [label="ParMultiDo(OutputSingleSource)"]
+                    3 -> 5 [style=solid label=""]
+                }
+                subgraph cluster_6 {
+                    label = "Create seeds/Read(CreateSource)/ParDo(BoundedSourceAsSDFWrapper)"
+                    7 [label="ParMultiDo(BoundedSourceAsSDFWrapper)"]
+                    5 -> 7 [style=solid label=""]
+                }
+            }
+        }
+        subgraph cluster_8 {
+            label = "Generate Random Game States"
+            subgraph cluster_9 {
+                label = "Generate Random Game States/Map"
+                10 [label="ParMultiDo(Anonymous)"]
+                7 -> 10 [style=solid label=""]
+            }
+        }
+        subgraph cluster_11 {
+            label = "Expand Monte Carlo Search Tree"
+            12 [label="ParMultiDo(Expand)"]
+            10 -> 12 [style=solid label=""]
+        }
+        subgraph cluster_13 {
+            label = "Filter visited nodes"
+            subgraph cluster_14 {
+                label = "Filter visited nodes/ParDo(Anonymous)"
+                15 [label="ParMultiDo(Anonymous)"]
+                12 -> 15 [style=solid label=""]
+            }
+        }
+        subgraph cluster_16 {
+            label = "Enrich Less Visited Nodes"
+            17 [label="ParMultiDo(Enrich)"]
+            15 -> 17 [style=solid label=""]
+        }
+        subgraph cluster_18 {
+            label = "Encode As TensorFlow Example"
+            subgraph cluster_19 {
+                label = "Encode As TensorFlow Example/Map"
+                20 [label="ParMultiDo(Anonymous)"]
+                17 -> 20 [style=solid label=""]
+            }
+        }
+        subgraph cluster_21 {
+            label = "Map To ByteArrays"
+            subgraph cluster_22 {
+                label = "Map To ByteArrays/Map"
+                23 [label="ParMultiDo(Anonymous)"]
+                20 -> 23 [style=solid label=""]
+            }
+        }
+        subgraph cluster_24 {
+            label = "Write TFRecords"
+            subgraph cluster_25 {
+                label = "Write TFRecords/Write"
+                subgraph cluster_26 {
+                    label = "Write TFRecords/Write/RewindowIntoGlobal"
+                    27 [label="Window.Assign"]
+                    23 -> 27 [style=solid label=""]
+                }
+            }
+        }
+    }
+}

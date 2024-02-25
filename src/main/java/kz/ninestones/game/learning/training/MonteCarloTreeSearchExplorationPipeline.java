@@ -41,35 +41,60 @@ public class MonteCarloTreeSearchExplorationPipeline {
     List<Integer> instances =
         IntStream.range(0, options.getNumSeeds()).boxed().collect(Collectors.toList());
 
-    pipeline
-        .apply("Create seeds", Create.of(instances))
+    PCollection<StateNode> stateNodes =
+        pipeline
+            .apply("Create seeds", Create.of(instances))
+            .apply(
+                "Generate Random Game States",
+                MapElements.into(BeamTypes.stateProtos)
+                    .via(i -> GameSimulator.randomState().toProto()))
+            .apply("Expand Monte Carlo Search Tree", ParDo.of(new ExpandFn()))
+            .apply(
+                "Filter visited nodes", Filter.by((stateNode) -> stateNode.getSimulations() >= 2))
+            .apply("Enrich Less Visited Nodes", ParDo.of(new EnrichFn()));
+
+    stateNodes
         .apply(
-            "Generate Random Game States",
-            MapElements.into(BeamTypes.stateProtos).via(i -> GameSimulator.randomState().toProto()))
-        .apply("Expand Monte Carlo Search Tree", ParDo.of(new ExpandFn()))
-        .apply("Filter visited nodes", Filter.by((stateNode) -> stateNode.getSimulations() >= 2))
-        .apply("Enrich Less Visited Nodes", ParDo.of(new EnrichFn()))
+            "[Direct] Encode As TensorFlow Example",
+            MapElements.into(BeamTypes.examples)
+                .via(MonteCarloTreeSearchExplorationPipeline::encodeDirectFeatures))
+        .apply(
+            "[Direct] Map To ByteArrays",
+            MapElements.into(BeamTypes.byteArrays).via(Example::toByteArray))
+        .apply(
+            "[Direct] Write TFRecords",
+            TFRecordIO.write()
+                .withNumShards(options.getNumOutputShards())
+                .to(options.getOutputPath()));
+
+    stateNodes
         .apply(
             "Encode As TensorFlow Example",
             MapElements.into(BeamTypes.examples)
-                .via(MonteCarloTreeSearchExplorationPipeline::encodeFeatures))
+                .via(MonteCarloTreeSearchExplorationPipeline::encodeExperimentalFeatures))
         .apply(
             "Map To ByteArrays", MapElements.into(BeamTypes.byteArrays).via(Example::toByteArray))
         .apply(
             "Write TFRecords",
             TFRecordIO.write()
                 .withNumShards(options.getNumOutputShards())
-                .to(options.getOutputPath()));
+                .to(options.getExperimentalOutputPath()));
 
     PipelineResult res = pipeline.run();
     res.waitUntilFinish();
     logger.info(res.metrics().toString());
   }
 
-  private static Example encodeFeatures(final StateNode stateNode) {
+  private static Example encodeExperimentalFeatures(final StateNode stateNode) {
     StateEncoder stateEncoder = new DefaultStateEncoder();
 
     return stateNode.toTFExample(stateEncoder, false);
+  }
+
+  private static Example encodeDirectFeatures(final StateNode stateNode) {
+    StateEncoder stateEncoder = new DefaultStateEncoder();
+
+    return stateNode.toTFExample(stateEncoder, true);
   }
 
   private static StateNode merge(Iterable<StateNode> stateNodes) {
@@ -101,6 +126,12 @@ public class MonteCarloTreeSearchExplorationPipeline {
     String getOutputPath();
 
     void setOutputPath(String value);
+
+    @Description("Path of the output files")
+    @Default.String("/home/anarbek/tmp/experimental/tiny.tfrecord")
+    String getExperimentalOutputPath();
+
+    void setExperimentalOutputPath(String value);
 
     @Description("# shards in the output")
     @Default.Integer(10)

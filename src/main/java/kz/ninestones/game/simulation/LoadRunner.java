@@ -14,7 +14,7 @@ public class LoadRunner {
   private static final Logger logger = LoggerFactory.getLogger(LoadRunner.class);
 
   public static void main(String[] args) {
-    run(5, Strategies.MINIMAX_TF, Strategies.MINIMAX_TF_DIRECT);
+    run(100, Strategies.MINIMAX_TF_V5_DIRECT, Strategies.MINIMAX_SCORE_DIFF);
   }
 
   public static void run(int times, Strategy playerOneStrategy, Strategy playerTwoStrategy) {

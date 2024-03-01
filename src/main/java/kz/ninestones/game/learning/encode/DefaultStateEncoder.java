@@ -54,7 +54,7 @@ public class DefaultStateEncoder implements StateEncoder {
   }
 
   @VisibleForTesting
-  public FloatList direct(State state) {
+  public static FloatList direct(State state) {
     FloatList.Builder list = FloatList.newBuilder();
 
     // Board [18]

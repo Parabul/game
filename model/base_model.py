@@ -13,11 +13,11 @@ def decode_fn(record_bytes):
   )
   return (example["input"], example["output"])
 
-files = tf.data.Dataset.list_files("/var/shared_disk/training/v5/direct/data-*-of-00016")
+files = tf.data.Dataset.list_files("/var/shared_disk/training/v6/direct/data-*-of-00016")
 
 files = list(files.as_numpy_iterator())
-training_files  = files[:15]
-validation_files  = files[15:]
+training_files  = files[1:]
+validation_files  = files[:1]
 
 print(training_files)
 print(validation_files)
@@ -38,8 +38,8 @@ model = keras.Sequential(
 
 model.summary()
 
-model.compile(loss="mean_absolute_error", optimizer="adam",
-              metrics=["mean_absolute_error", "mse", "categorical_crossentropy"])
+model.compile(loss="mae", optimizer="adam",
+              metrics=["mae", "mse"])
 
 callback = keras.callbacks.EarlyStopping(monitor='loss', min_delta=0.0001, patience=3)
 

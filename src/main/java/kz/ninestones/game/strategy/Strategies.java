@@ -8,25 +8,22 @@ public class Strategies {
   public static final Strategy RANDOM = new RandomMoveStrategy();
   public static final Strategy FIRST_ALLOWED_MOVE = new FirstAllowedMoveStrategy();
   public static final Strategy MINIMAX_SCORE_DIFF =
-      new MatrixMinMaxStrategy(new ScoreDiffStateEvaluator());
+      new RecursiveMinMax(new ScoreDiffStateEvaluator(),2 );
 
   public static final Strategy MINIMAX_TF =
       new MatrixMinMaxStrategy(new TensorFlowStateEvaluator());
 
+  public static final Strategy BATCH_MINIMAX_TF =
+          new BatchMinMaxStrategy();
+
+
   public static final Strategy MINIMAX_TF_CANDIDATE =
       new MatrixMinMaxStrategy(
-          new TensorFlowStateEvaluator("/home/anarbek/tmp/models/v4/tf", /* direct= */ false));
+          new TensorFlowStateEvaluator("/home/anarbek/tmp/models/v5/direct/tf", /* direct= */ true));
 
-  public static final Strategy MINIMAX_TF_DIRECT =
-      new MatrixMinMaxStrategy(
-          new TensorFlowStateEvaluator("/var/shared_disk/models/random/v2", /* direct= */ true));
-
-  public static final Strategy MINIMAX_TF_V5_DIRECT=
-          new MatrixMinMaxStrategy(
-                  new TensorFlowStateEvaluator("/home/anarbek/tmp/models/v5/direct/tf", /* direct= */ true));
-  public static final Strategy MINIMAX_TF_V5_EXP=
-          new MatrixMinMaxStrategy(
-                  new TensorFlowStateEvaluator("/home/anarbek/tmp/models/v5/experimental/tf", /* direct= */ false));
+  public static final Strategy MINIMAX_TF_CANDIDATE_2 =
+      new RecursiveMinMax(
+          new TensorFlowStateEvaluator("/var/shared_disk/models/v8/direct/tf", /* direct= */ true),2);
 
 
 }

@@ -140,7 +140,7 @@ public class MonteCarloTreeSearchExplorationPipeline {
     void setNumOutputShards(int value);
 
     @Description("# of Monte Carlo Tree Search expanses")
-    @Default.Integer(10)
+    @Default.Integer(5)
     int getNumExpanses();
 
     void setNumExpanses(int value);
@@ -170,7 +170,7 @@ public class MonteCarloTreeSearchExplorationPipeline {
           context.getPipelineOptions().as(ExplorationPipelineOptions.class).getNumExpanses();
 
       MonteCarloTreeSearch monteCarloTreeSearch =
-          new MonteCarloTreeSearch(GameSimulator.MINIMAX, new TreeData(), new State(root));
+          new MonteCarloTreeSearch(GameSimulator.MINIMAX_TF, new TreeData(), new State(root));
 
       for (int i = 0; i < numExpanses; i++) {
         monteCarloTreeSearch.expand();
@@ -193,7 +193,7 @@ public class MonteCarloTreeSearchExplorationPipeline {
       observed.inc();
       int topOff = context.getPipelineOptions().as(ExplorationPipelineOptions.class).getTopOff();
 
-      GameSimulator gameSimulator = GameSimulator.MINIMAX;
+      GameSimulator gameSimulator = GameSimulator.MINIMAX_TF;
       StateNode enriched = new StateNode(in.getState());
       enriched.merge(in);
       if (enriched.getSimulations() < topOff) {

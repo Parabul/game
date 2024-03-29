@@ -37,7 +37,7 @@ public class DefaultStateEncoderTest {
             /* specialCells= */ ImmutableMap.of(Player.ONE, 10),
             Player.TWO);
 
-    assertThat(stateEncoder.direct(state).getValueList())
+    assertThat(DefaultStateEncoder.direct(state).getValueList())
         .containsExactly(
             0.0f,
             0.5f,
@@ -86,7 +86,7 @@ public class DefaultStateEncoderTest {
 
     State state = new State();
 
-    assertThat(stateEncoder.direct(state).getValueList())
+    assertThat(DefaultStateEncoder.direct(state).getValueList())
         .containsExactly(
             0.0f,
             0.0f,

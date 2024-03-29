@@ -1,4 +1,4 @@
-package kz.ninestones.game.modeling.strategy;
+package kz.ninestones.game.strategy;
 
 import com.google.common.truth.Truth;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.List;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.learning.evaluation.ScoreDiffStateEvaluator;
-import kz.ninestones.game.strategy.RecursiveMinMax;
 import org.junit.Test;
 
 public class RecursiveMinMaxTest {
@@ -18,7 +17,7 @@ public class RecursiveMinMaxTest {
 
     List<Integer> moves = new ArrayList<>(10);
 
-    for(int i =0;i < 10; i++){
+    for (int i = 0; i < 10; i++) {
       int move = recursiveMinMax.suggestNextMove(state);
       moves.add(move);
       state = Policy.makeMove(state, move);

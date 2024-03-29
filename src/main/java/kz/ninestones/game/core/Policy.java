@@ -156,5 +156,4 @@ public class Policy {
 
     return cell + 1;
   }
-
 }

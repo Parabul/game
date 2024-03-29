@@ -7,7 +7,9 @@ import kz.ninestones.game.core.State;
 public class FirstAllowedMoveStrategy implements Strategy {
   @Override
   public int suggestNextMove(State state) {
-    return IntStream.rangeClosed(1, 9).filter(move -> Policy.isAllowedMove(state, move)).findFirst()
+    return IntStream.rangeClosed(1, 9)
+        .filter(move -> Policy.isAllowedMove(state, move))
+        .findFirst()
         .orElseThrow(() -> new IllegalStateException("No moves, game over!l"));
   }
 }

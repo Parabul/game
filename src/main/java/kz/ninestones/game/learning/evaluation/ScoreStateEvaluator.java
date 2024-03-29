@@ -7,7 +7,6 @@ import kz.ninestones.game.core.State;
 
 public class ScoreStateEvaluator implements StateEvaluator {
 
-
   @Override
   public double evaluate(State state, Player player) {
     if (Policy.isGameOver(state)) {

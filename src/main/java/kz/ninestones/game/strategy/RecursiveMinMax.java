@@ -14,38 +14,37 @@ import org.apache.commons.math3.util.Pair;
 
 public class RecursiveMinMax implements Strategy {
 
-  private final LoadingCache<State, Map<Integer, State>> childStatesCache = CacheBuilder.newBuilder()
+  private final LoadingCache<State, Map<Integer, State>> childStatesCache =
+      CacheBuilder.newBuilder()
           .maximumSize(10000)
           .expireAfterWrite(60, TimeUnit.SECONDS)
           .build(
-                  new CacheLoader<State, Map<Integer, State>>() {
-                    @Override
-                    public Map<Integer, State> load(State state)  {
-                      Map<Integer, State> childStates = new HashMap<>(9);
-                      for (int move = 1; move <= 9; move++) {
-                        if (Policy.isAllowedMove(state, move)) {
+              new CacheLoader<State, Map<Integer, State>>() {
+                @Override
+                public Map<Integer, State> load(State state) {
+                  Map<Integer, State> childStates = new HashMap<>(9);
+                  for (int move = 1; move <= 9; move++) {
+                    if (Policy.isAllowedMove(state, move)) {
 
-                          State childState = Policy.makeMove(state, move);
-                          childStates.put(move, childState);
-                        }
-                      }
-
-                      return childStates;
+                      State childState = Policy.makeMove(state, move);
+                      childStates.put(move, childState);
                     }
-                  });
+                  }
+
+                  return childStates;
+                }
+              });
   private final StateEvaluator stateEvaluator;
   private final int depth;
 
   public RecursiveMinMax(StateEvaluator stateEvaluator, int depth) {
     this.stateEvaluator = stateEvaluator;
-    this.depth=depth;
+    this.depth = depth;
   }
 
   private Map<Integer, State> getChildStates(State state) {
     return childStatesCache.getUnchecked(state);
   }
-
-
 
   public Pair<Integer, Double> minimax(
       int depth, int move, State state, Player maximizingPlayer, double alpha, double beta) {
@@ -102,7 +101,8 @@ public class RecursiveMinMax implements Strategy {
 
   @Override
   public int suggestNextMove(State state) {
-    return minimax(0, 0, state, state.getNextMove(), Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
+    return minimax(
+            0, 0, state, state.getNextMove(), Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)
         .getKey();
   }
 }

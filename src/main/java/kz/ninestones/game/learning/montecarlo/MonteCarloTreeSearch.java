@@ -62,7 +62,9 @@ public class MonteCarloTreeSearch {
 
       final long simulations =
           currentNode.getSimulations()
-              + simulationResultToPropagate.getObservedWinners().values().stream().mapToInt(Integer::intValue).sum();
+              + simulationResultToPropagate.getObservedWinners().values().stream()
+                  .mapToInt(Integer::intValue)
+                  .sum();
 
       currentNode =
           Collections.max(childNodes, Comparator.comparing(node -> getWeight(simulations, node)));

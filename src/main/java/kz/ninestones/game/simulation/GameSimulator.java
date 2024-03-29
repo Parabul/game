@@ -21,8 +21,7 @@ public class GameSimulator {
       new GameSimulator(Strategies.MINIMAX_SCORE_DIFF, Strategies.MINIMAX_SCORE_DIFF);
 
   public static final GameSimulator MINIMAX_TF =
-          new GameSimulator(Strategies.BATCH_MINIMAX_TF, Strategies.BATCH_MINIMAX_TF);
-
+      new GameSimulator(Strategies.BATCH_MINIMAX_TF, Strategies.BATCH_MINIMAX_TF);
 
   public static final GameSimulator DETEMINISTIC =
       new GameSimulator(Strategies.FIRST_ALLOWED_MOVE, Strategies.FIRST_ALLOWED_MOVE);

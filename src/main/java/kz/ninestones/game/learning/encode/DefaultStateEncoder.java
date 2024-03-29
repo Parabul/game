@@ -35,24 +35,6 @@ public class DefaultStateEncoder implements StateEncoder {
         Arrays.stream(state.getCells()).mapToDouble(cell -> 1.0 * cell / 162).toArray());
   }
 
-  @Override
-  public Map<String, Feature> featuresOf(State state, boolean direct) {
-    if (direct) {
-      return ImmutableMap.of(
-          StateEncoder.INPUT, Feature.newBuilder().setFloatList(direct(state)).build());
-    } else {
-      return ImmutableMap.of(
-          "board",
-          ofBoard(state),
-          "score",
-          ofScore(state),
-          "special",
-          ofSpecialCells(state),
-          "next",
-          ofNextMove(state));
-    }
-  }
-
   @VisibleForTesting
   public static FloatList direct(State state) {
     FloatList.Builder list = FloatList.newBuilder();
@@ -81,5 +63,23 @@ public class DefaultStateEncoder implements StateEncoder {
     list.addValue(state.getNextMove().ordinal());
 
     return list.build();
+  }
+
+  @Override
+  public Map<String, Feature> featuresOf(State state, boolean direct) {
+    if (direct) {
+      return ImmutableMap.of(
+          StateEncoder.INPUT, Feature.newBuilder().setFloatList(direct(state)).build());
+    } else {
+      return ImmutableMap.of(
+          "board",
+          ofBoard(state),
+          "score",
+          ofScore(state),
+          "special",
+          ofSpecialCells(state),
+          "next",
+          ofNextMove(state));
+    }
   }
 }

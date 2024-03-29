@@ -5,7 +5,6 @@ import static com.google.common.truth.Truth.assertThat;
 import com.google.common.collect.ImmutableMap;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
-import kz.ninestones.game.learning.evaluation.ScoreDiffStateEvaluator;
 import org.junit.Test;
 
 public class ScoreDiffStateEvaluatorTest {
@@ -21,9 +20,12 @@ public class ScoreDiffStateEvaluatorTest {
 
   @Test
   public void evaluateMaxDiff() {
-    State state = new State(ImmutableMap.of(0, 1, 1, 2, 2, 3),
-        ImmutableMap.of(Player.ONE, 82, Player.TWO, 0), ImmutableMap.of(Player.ONE, 12),
-        Player.ONE);
+    State state =
+        new State(
+            ImmutableMap.of(0, 1, 1, 2, 2, 3),
+            ImmutableMap.of(Player.ONE, 82, Player.TWO, 0),
+            ImmutableMap.of(Player.ONE, 12),
+            Player.ONE);
 
     ScoreDiffStateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();
 
@@ -33,9 +35,12 @@ public class ScoreDiffStateEvaluatorTest {
 
   @Test
   public void evaluateNegativeDiff() {
-    State state = new State(ImmutableMap.of(0, 1, 1, 2, 2, 3),
-        ImmutableMap.of(Player.ONE, 10, Player.TWO, 50), ImmutableMap.of(Player.ONE, 12),
-        Player.ONE);
+    State state =
+        new State(
+            ImmutableMap.of(0, 1, 1, 2, 2, 3),
+            ImmutableMap.of(Player.ONE, 10, Player.TWO, 50),
+            ImmutableMap.of(Player.ONE, 12),
+            Player.ONE);
 
     ScoreDiffStateEvaluator stateEvaluator = new ScoreDiffStateEvaluator();
 

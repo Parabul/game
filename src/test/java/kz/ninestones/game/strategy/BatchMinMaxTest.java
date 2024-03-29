@@ -1,15 +1,12 @@
 package kz.ninestones.game.strategy;
 
 import com.google.common.truth.Truth;
-import kz.ninestones.game.core.Policy;
-import kz.ninestones.game.core.State;
-import kz.ninestones.game.learning.evaluation.ScoreDiffStateEvaluator;
-import kz.ninestones.game.learning.evaluation.TensorFlowStateEvaluator;
-import org.apache.beam.sdk.util.SerializableUtils;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import kz.ninestones.game.core.Policy;
+import kz.ninestones.game.core.State;
+import org.apache.beam.sdk.util.SerializableUtils;
+import org.junit.Test;
 
 public class BatchMinMaxTest {
 
@@ -20,7 +17,7 @@ public class BatchMinMaxTest {
 
     List<Integer> moves = new ArrayList<>(10);
 
-    for(int i =0;i < 20; i++){
+    for (int i = 0; i < 20; i++) {
       int batchMove = batch.suggestNextMove(state);
       moves.add(batchMove);
       state = Policy.makeMove(state, batchMove);
@@ -30,7 +27,7 @@ public class BatchMinMaxTest {
   }
 
   @Test
-  public void shouldBeSerializable(){
+  public void shouldBeSerializable() {
     SerializableUtils.ensureSerializable(new BatchMinMaxStrategy());
   }
 }

@@ -26,7 +26,6 @@ public class TensorFlowStateEvaluatorTest {
             ImmutableMap.of(Player.ONE, 12),
             Player.ONE);
 
-
     StateEvaluator stateEvaluator = new TensorFlowStateEvaluator();
 
     assertThat(stateEvaluator.evaluate(state, Player.ONE)).isWithin(0.01).of(1.01);
@@ -41,7 +40,6 @@ public class TensorFlowStateEvaluatorTest {
             ImmutableMap.of(Player.ONE, 10, Player.TWO, 70),
             ImmutableMap.of(),
             Player.TWO);
-
 
     StateEvaluator stateEvaluator = new TensorFlowStateEvaluator();
 

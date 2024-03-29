@@ -5,15 +5,13 @@ import javax.annotation.Nullable;
 
 public class RecordedGame {
 
-  @Nullable
-  private final Player winner;
+  @Nullable private final Player winner;
   private final List<State> steps;
 
   public RecordedGame(Player winner, List<State> steps) {
     this.winner = winner;
     this.steps = steps;
   }
-
 
   public Player getWinner() {
     return winner;

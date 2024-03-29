@@ -53,8 +53,8 @@ public class MatrixMinMaxStrategy implements Strategy {
     Map<Integer, Double> minimumOutcomes = new HashMap<>();
 
     for (int firstMove = 0; firstMove < 9; firstMove++) {
-      OptionalDouble minOutcome = Arrays.stream(outcomes[firstMove])
-          .filter(outcome -> outcome != -1).min();
+      OptionalDouble minOutcome =
+          Arrays.stream(outcomes[firstMove]).filter(outcome -> outcome != -1).min();
 
       if (minOutcome.isPresent()) {
         minimumOutcomes.put(firstMove + 1, minOutcome.getAsDouble());

@@ -3,9 +3,7 @@ package kz.ninestones.game.learning.evaluation;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.State;
 
-/**
- * Evaluates a state of the game and conditions favoring player ONE.
- */
+/** Evaluates a state of the game and conditions favoring player ONE. */
 public interface StateEvaluator {
 
   /**

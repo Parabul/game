@@ -1,13 +1,12 @@
 package kz.ninestones.game.strategy;
 
+import java.util.*;
+import java.util.stream.Collectors;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
 import kz.ninestones.game.learning.evaluation.BatchTensorFlowStateEvaluator;
 import kz.ninestones.game.utils.ModelUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class BatchMinMaxStrategy implements Strategy {
 
@@ -71,6 +70,6 @@ public class BatchMinMaxStrategy implements Strategy {
             }
         }
 
-        return ModelUtils.firstMaximizingKey(minimumOutcomes);
+        return ModelUtils.anyMaximizingKey(minimumOutcomes);
     }
 }

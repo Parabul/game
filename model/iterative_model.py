@@ -13,14 +13,14 @@ def decode_fn(record_bytes):
   )
   return (example["input"], example["output"])
 
-files = tf.data.Dataset.list_files("/var/shared_disk/training/v8/direct/data-*-of-00010")
+files = tf.data.Dataset.list_files("/var/shared_disk/training/v9/direct/data-*-of-00016")
 files = list(files.as_numpy_iterator())
 
 
-decoded_training_dataset = tf.data.TFRecordDataset(files).map(decode_fn).batch(10000)
+decoded_training_dataset = tf.data.TFRecordDataset(files).map(decode_fn).batch(100000)
 
 
-model = loaded_model = keras.models.load_model('/var/shared_disk/models/v5/')
+model = keras.models.load_model('/var/shared_disk/models/v8/direct/tf')
 
 model.summary()
 
@@ -30,5 +30,5 @@ model.fit(decoded_training_dataset, callbacks=[callback], epochs=100)
 
 print(model.predict([[0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.055555556,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]]))
 
-model.save("/var/shared_disk/models/v8/direct/tf", save_format = "tf", overwrite = True)
+model.save("/var/shared_disk/models/v9/direct/tf", save_format = "tf", overwrite = True)
 

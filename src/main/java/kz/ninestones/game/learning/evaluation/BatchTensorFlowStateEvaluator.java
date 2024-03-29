@@ -1,5 +1,10 @@
 package kz.ninestones.game.learning.evaluation;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
 import kz.ninestones.game.core.State;
@@ -13,26 +18,12 @@ import org.tensorflow.ndarray.Shape;
 import org.tensorflow.ndarray.buffer.DataBuffers;
 import org.tensorflow.types.TFloat32;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public class BatchTensorFlowStateEvaluator implements Serializable {
-
-    private static final String MODEL_PATH ="/var/shared_disk/models/v8/direct/tf";
 
     public static final String OPERATION = "StatefulPartitionedCall:0";
     public static final String FEED_KEY_MASK = "serving_default_%s:0";
-    private static Session SESSION = SavedModelBundle.load(MODEL_PATH, "serve").session();
-
-
-
-    public BatchTensorFlowStateEvaluator() {
-    }
-
-
+    private static final String MODEL_PATH ="/var/shared_disk/iter/current_model/direct/tf";
+    private static final Session SESSION = SavedModelBundle.load(MODEL_PATH, "serve").session();
 
     public Map<String, Double> evaluate(List<State> states, Player player) {
         Map<String, Double> scoreByStateId = new HashMap<>();

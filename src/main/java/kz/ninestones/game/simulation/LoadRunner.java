@@ -14,7 +14,7 @@ public class LoadRunner {
   private static final Logger logger = LoggerFactory.getLogger(LoadRunner.class);
 
   public static void main(String[] args) {
-    run(200, Strategies.BATCH_MINIMAX_TF, Strategies.MINIMAX_TF_CANDIDATE_3);
+    run(100, Strategies.COMPACT_TF, Strategies.COMPACT_TF);
   }
 
   public static void run(int times, Strategy playerOneStrategy, Strategy playerTwoStrategy) {
@@ -47,7 +47,7 @@ public class LoadRunner {
 
     for (int i = 0; i < times; i++) {
       logger.info("(inverted) step: " + i);
-      RecordedGame recordedGame = invertedSimulator.recordedPlayOut(GameSimulator.randomState());
+      RecordedGame recordedGame = invertedSimulator.recordedPlayOut(new State());
 
       if (Player.ONE.equals(recordedGame.getWinner())) {
         playerTwoWon++;

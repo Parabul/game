@@ -1,5 +1,6 @@
 package kz.ninestones.game.learning.fastmontecarlo.montecarlo;
 
+import java.io.Serializable;
 import java.util.*;
 import kz.ninestones.game.core.Player;
 import kz.ninestones.game.core.Policy;
@@ -8,7 +9,7 @@ import kz.ninestones.game.simulation.GameSimulator;
 import kz.ninestones.game.simulation.SimulationResult;
 import kz.ninestones.game.utils.MathUtils;
 
-public class FastMonteCarloTreeSearch {
+public class FastMonteCarloTreeSearch implements Serializable {
 
     private static final int NUM_SIMULATIONS = 1;
     private static final double EXPLORATION_WEIGHT = Math.sqrt(2);
@@ -72,15 +73,15 @@ public class FastMonteCarloTreeSearch {
         return exploitation + EXPLORATION_WEIGHT * exploration;
     }
 
-    public List<GameStateNode.GameStateNodeInfo> traverse() {
-        List<GameStateNode.GameStateNodeInfo> nodes = new ArrayList<>();
+    public List<GameStateNodeInfo> traverse() {
+        List<GameStateNodeInfo> nodes = new ArrayList<>();
         Stack<GameStateNode> stack = new Stack<GameStateNode>();
         GameStateNode current = root;
         stack.push(root);
 
         while (!stack.isEmpty()) {
             current = stack.pop();
-            nodes.add(new GameStateNode.GameStateNodeInfo(current.getState(),current.getObservedOutcomes()));
+            nodes.add(new GameStateNodeInfo(current.getState(),current.getObservedOutcomes()));
 
             current.getChildStates().forEach(stack::push);
         }

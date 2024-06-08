@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ModelUtils {
 
-  public static final double PRECISION = 0.03;
+  public static final double PRECISION = 0.0001;
 
   public static int anyMaximizingKey(Map<Integer, Double> outcomes) {
     checkArgument(!outcomes.isEmpty(), "outcomes");

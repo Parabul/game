@@ -37,6 +37,12 @@ public class TensorFlowStateEvaluator implements StateEvaluator {
     this.direct = false;
   }
 
+  public TensorFlowStateEvaluator(String modelPath, boolean direct, StateEncoder stateEncoder) {
+    this.direct = direct;
+    this.modelPath = modelPath;
+    this.stateEncoder = stateEncoder;
+  }
+
   private static TFloat32 fromFeature(Feature feature) {
     List<? extends Number> values;
     if (feature.hasFloatList()) {

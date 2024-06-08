@@ -18,7 +18,7 @@ import org.tensorflow.ndarray.Shape;
 import org.tensorflow.ndarray.buffer.DataBuffers;
 import org.tensorflow.types.TFloat32;
 
-public class BatchTensorFlowStateEvaluator implements Serializable {
+public class BatchTensorFlowStateEvaluator implements BatchStateEvaluator, Serializable {
 
     public static final String OPERATION = "StatefulPartitionedCall:0";
     public static final String FEED_KEY_MASK = "serving_default_%s:0";

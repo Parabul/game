@@ -18,7 +18,7 @@ public class GameSimulator {
       new GameSimulator(Strategies.RANDOM, Strategies.RANDOM);
 
   public static final GameSimulator MINIMAX =
-      new GameSimulator(Strategies.MINIMAX_SCORE_DIFF, Strategies.MINIMAX_SCORE_DIFF);
+      new GameSimulator(Strategies.BATCH_MINIMAX_SCORE_DIFF, Strategies.BATCH_MINIMAX_SCORE_DIFF);
 
   public static final GameSimulator MINIMAX_TF =
       new GameSimulator(Strategies.BATCH_MINIMAX_TF, Strategies.BATCH_MINIMAX_TF);
